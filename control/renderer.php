@@ -31,6 +31,8 @@ class RENDERER
     "/resources/javascript/clock.js"
   );
 
+  private static $page = "";
+
   public static function addJavascript($file)
   {
     self::$js[] = $file;

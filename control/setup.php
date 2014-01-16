@@ -30,8 +30,8 @@ require_once("control/util.php");
 require_once("control/analytics.php");
 
 // connect to databases
-require_once("control/db/gamedb.php");
 require_once("control/db/logdb.php");
+require_once("control/db/gamedb.php");
 
 // upgrade databases, if requested and necessary
 if (isset($_GET['evolve_dbs']))
