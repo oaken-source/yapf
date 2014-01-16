@@ -64,7 +64,7 @@ class RENDERER
         self::$content = "<h1>404 Not Found</h1><p>the page you requested could not be found</p>";
       }
 
-    if (file_exists("templates/base.php")
+    if (file_exists("templates/base.php"))
       {
         $template = new T("templates/base.php", array(
           'title' => self::$title,
