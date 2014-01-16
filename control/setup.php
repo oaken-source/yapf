@@ -19,6 +19,8 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+define("SCRIPT_START", microtime(true));
+
 date_default_timezone_set("Europe/Berlin");
 
 // auxiliary function definitions

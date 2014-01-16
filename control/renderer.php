@@ -62,6 +62,8 @@ class RENDERER
       'js' => self::$js
     ));
     $page->render();
+
+    ANALYTICS::finish();
   }
 
   public static function setTemplate($t)
