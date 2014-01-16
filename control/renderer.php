@@ -22,18 +22,24 @@
 class RENDERER
 {
 
-  private static $content = false;
+  private static $content = "<h1>This is YAPF</h1>";
   private static $notices = array();
 
   private static $title = "";
 
   private static $extra_js = array();
+  private static $extra_css = array();
 
   private static $page = "";
 
-  public static function addJavascript($file)
+  public static function addJS($file)
   {
     self::$extra_js[] = $file;
+  }
+  
+  public static function addCSS($file)
+  {
+    self::$extra_css[] = $file;
   }
 
   public static function setTitle($str)
@@ -43,20 +49,39 @@ class RENDERER
 
   public static function renderPage($page)
   {
-    if (!file_exists("pages/" . $page . "/index.php"))
-      redirect_and_exit(INDEX . "?page=404");
+    if (file_exists("pages/" . $page . "/index.php"))
+      {
+        self::$page = $page;
+        require_once("pages/" . $page . "/index.php");
+      }
+    elseif (file_exists("pages/404/index.php"))
+      {
+        self::$page = "404";
+        require_once("pages/404/index.php");
+      }
+    else
+      {
+        self::$content = "<h1>404 Not Found</h1><p>the page you requested could not be found</p>";
+      }
 
-    self::$page = $page;
-
-    require_once("pages/" . $page . "/index.php");
-
-    $page = new T("templates/base.php", array(
-      'title' => self::$title,
-      'notices' => self::$notices,
-      'content' => self::$content,
-      'extra_js' => self::$extra_js
-    ));
-    $page->render();
+    if (file_exists("templates/base.php")
+      {
+        $template = new T("templates/base.php", array(
+          'title' => self::$title,
+          'notices' => self::$notices,
+          'content' => self::$content,
+          'extra_js' => self::$extra_js
+        ));
+        $template->render();
+      }
+    elseif (self::$content instanceof T)
+      {
+        self::$content->render();
+      }
+    else
+      {
+        echo self::$content;
+      }
 
     ANALYTICS::finish();
   }
