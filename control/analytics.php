@@ -1,7 +1,7 @@
 <?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
 
 /******************************************************************************
- *                           knights of kalindor                              *
+ *                                    yapf                                    *
  *                                                                            *
  *    Copyright (C) 2013  Karl Kronberger, Andreas Grapentin                  *
  *                                                                            *

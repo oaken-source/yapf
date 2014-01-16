@@ -1,7 +1,7 @@
 <?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
 
 /******************************************************************************
- *                           knights of kalindor                              *
+ *                                    yapf                                    *
  *                                                                            *
  *    Copyright (C) 2013  Karl Kronberger, Andreas Grapentin                  *
  *                                                                            *
@@ -22,25 +22,6 @@
 class MAIL
 {
 
-  /*self::$headers = "MIME-Version: 1.0\r\n"
-                  ."Content-type: text/html; charset=utf-8\r\n"
-                  ."From: Knights of Kalindor <noreply@kalindor.at>\r\n"
-                  ."Reply-To: Recipient Name <receiver@domain3.com>";
-
-  public static function send($to, $subject, $template, $extra_headers = array())
-  {
-    
-    $headers   = array();
-    $headers[] = "MIME-Version: 1.0";
-    $headers[] = "Content-type: text/plain; charset=iso-8859-1";
-    $headers[] = "From: Sender Name <sender@domain.com>";
-    $headers[] = "Bcc: JJ Chong <bcc@domain2.com>";
-    $headers[] = "Reply-To: Recipient Name <receiver@domain3.com>";
-    $headers[] = "Subject: {$subject}";
-    $headers[] = "X-Mailer: PHP/".phpversion();
-
-    mail($to, $subject, $email, implode("\r\n", $headers));
-  }*/
 
 }
 
