@@ -11,6 +11,6 @@ files="control manage.py"
 code=/home/andi/code
 
 # kalindor-legacy
-cp -Ruv $files $code/kalindor-legacy
+rsync -av --exclude=".*" $files $code/kalindor-legacy/
 
 echo "all up to date"

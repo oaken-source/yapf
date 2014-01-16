@@ -25,7 +25,7 @@ class RENDERER
   private static $content = false;
   private static $notices = array();
 
-  private static $title = "Knights of Kalindor";
+  private static $title = "";
 
   private static $js = array(
     "/resources/javascript/clock.js"
@@ -40,25 +40,20 @@ class RENDERER
 
   public static function setTitle($str)
   {
-    self::$title = "Knights of Kalindor - " . $str;
+    self::$title = $str;
   }
 
   public static function renderPage($page)
   {
-    if (!file_exists("pages/" . $index . "/index.php"))
+    if (!file_exists("pages/" . $page . "/index.php"))
       $page = "404";
 
     self::$page = $page;
 
     require_once("pages/" . $page . "/index.php");
 
-    $navigation = new T("templates/navigation-logged-" . (SESSION::isLoggedIn() ? "in" : "out") . ".php");
-    $infobar = new T("templates/infobar-logged-" . (SESSION::isLoggedIn() ? "in" : "out") . ".php");
-
     $page = new T("templates/base.php", array(
       'title' => self::$title,
-      'navigation' => $navigation,
-      'infobar' => $infobar,
       'notices' => self::$notices,
       'content' => self::$content,
       'js' => self::$js

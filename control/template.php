@@ -41,6 +41,11 @@ class T
     $this->args[$key] = $value;
   }
 
+  public function filter($str)
+  {
+    return htmlspecialchars($str);
+  }
+
   public function render()
   {
     require($this->file);
