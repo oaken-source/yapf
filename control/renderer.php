@@ -44,7 +44,7 @@ class RENDERER
   public static function renderPage($page)
   {
     if (!file_exists("pages/" . $page . "/index.php"))
-      $page = "404";
+      redirect_and_exit(INDEX . "?page=404");
 
     self::$page = $page;
 
@@ -61,9 +61,9 @@ class RENDERER
     ANALYTICS::finish();
   }
 
-  public static function setTemplate($t)
+  public static function setTemplate($t, $args = array())
   {
-    self::$content = $t;
+    self::$content = new T("pages/" . self::$page . "/templates/" . $t, $args);
   } 
 
   public static function setError($str)

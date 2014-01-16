@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -17,35 +17,12 @@
  *                                                                            *
  *    You should have received a copy of the GNU General Public License       *
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
- ******************************************************************************/
+ *****************************************************************************/
 
-define('SCRIPT_START', microtime(true));
-defined('INDEX') or define('INDEX', '/');
-
-date_default_timezone_set("Europe/Berlin");
-
-// auxiliary function definitions
-require_once("control/util.php");
-
-// setup analytics wrapper
-require_once("control/analytics.php");
-
-// connect to databases
-require_once("control/db/logdb.php");
-require_once("control/db/gamedb.php");
-
-// upgrade databases, if requested and necessary
-if (isset($_GET['evolve_dbs']))
-  require_once("control/db/evolve.php");
-
-// initialize session (TODO)
-require_once("control/session.php");
-
-// initialize mail handler
-require_once("control/mail.php");
-
-// setup html template and renderer class
-require_once("control/template.php");
-require_once("control/renderer.php");
+if (!defined("VALID_REQUEST"))
+  {
+    header('Location: /');
+    exit();
+  }
 
 ?>

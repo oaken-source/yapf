@@ -26,7 +26,7 @@ index_php_template = """
 <?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php"); 
 
 RENDERER::setTitle("%s");
-RENDERER::setTemplate("%s");
+RENDERER::setTemplate("%s.php");
 
 ?>
 """
