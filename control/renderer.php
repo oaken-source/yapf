@@ -27,15 +27,13 @@ class RENDERER
 
   private static $title = "";
 
-  private static $js = array(
-    "/resources/javascript/clock.js"
-  );
+  private static $extra_js = array();
 
   private static $page = "";
 
   public static function addJavascript($file)
   {
-    self::$js[] = $file;
+    self::$extra_js[] = $file;
   }
 
   public static function setTitle($str)
@@ -56,7 +54,7 @@ class RENDERER
       'title' => self::$title,
       'notices' => self::$notices,
       'content' => self::$content,
-      'js' => self::$js
+      'extra_js' => self::$extra_js
     ));
     $page->render();
 
