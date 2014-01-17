@@ -22,14 +22,14 @@
 class ANALYTICS
 {
 
-  public static function finish()
+  public static function finish($http_status = 200)
   {
     if (LOG_EABLED !== true)
       return;
 
     $totaltime = microtime(true) - SCRIPT_START;
 
-    LOG::analytics($totaltime);
+    LOG::analytics($totaltime, $http_status);
   }
 
 }

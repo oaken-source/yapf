@@ -24,8 +24,6 @@ class DB
   
   private static $handle;
  
-  public static $name;
-
   public static function init()
   {
     self::connect();
@@ -34,12 +32,11 @@ class DB
     require_once("yapf/db/evolve_db.php");
   }
 
-  public static function connect()
+  private static function connect()
   {
     self::$handle = mysqli_connect(DB_SERVER, DB_DBUSER, DB_DBPASS);
     assert_fatal(self::$handle, "DB: unable to connect to database");
-    mysqli_select_db(self::$handle, $gamedb_name);
-    self::$name = $gamedb_name;
+    mysqli_select_db(self::$handle, DB_DBNAME);
   }
 
   public static function escape($str)

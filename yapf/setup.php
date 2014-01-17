@@ -19,11 +19,16 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+// capture timestamp for performance analysis
+define('SCRIPT_START', microtime(true));
+
+// get some basic utility methods
+require_once("yapf/util.php");
+
 // load settings
 require_once("yapf/settings_default.php");
 
 // load helper methods and classes
-require_once("yapf/util.php");
 require_once("yapf/session.php");
 require_once("yapf/mail.php");
 require_once("yapf/template.php");
@@ -35,7 +40,7 @@ require_once("yapf/db/db.php");
 // initialize
 if (LOG_ENABLED === true)
   LOG::init();
-if (DB_ENBLED === true)
+if (DB_ENABLED === true)
   DB::init();
 
 SESSION::init();

@@ -24,8 +24,6 @@ class LOG
 
   private static $handle;
 
-  public static $name;
-
   public static function init()
   {
     self::connect();
@@ -38,8 +36,7 @@ class LOG
   {
     self::$handle = mysqli_connect(LOG_SERVER, LOG_DBUSER, LOG_DBPASS);
     assert_fatal(self::$handle, "LOG: unable to connect to database");
-    mysqli_select_db(self::$handle, $logdb_name);
-    self::$name = $logdb_name;
+    mysqli_select_db(self::$handle, LOG_DBNAME);
   }
 
   public static function event($loglevel, $message)
@@ -48,7 +45,7 @@ class LOG
       mysqli_query(self::$handle, "
         insert into log_events (loglevel, message) values
           ('" . mysqli_real_escape_string(self::$handle, $loglevel) . "',
-          '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
+           '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
   }
 
   public static function query($query, $message)
@@ -60,13 +57,14 @@ class LOG
            '" . mysqli_real_escape_string(self::$handle, $str) . "')");
   }
 
-  public static function analytics($totaltime)
+  public static function analytics($totaltime, $http_status)
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into analytics (request, totaltime) values
+        insert into analytics (request, totaltime, http_status) values
           ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
-          '" . mysqli_real_escape_string(self::$handle, $totaltime) . "')");
+           '" . mysqli_real_escape_string(self::$handle, $totaltime) . "',
+           '" . mysqli_real_escape_string(self::$handle, $http_status) . "')");
   }
 
 }

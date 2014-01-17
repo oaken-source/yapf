@@ -27,7 +27,8 @@
  */
 function redirect_and_exit($location = "/")
 {
-  ANALYTICS::finish();
+  if (class_exists('ANALYTICS'))
+    ANALYTICS::finish(302);
   header("Location: " . $location);
   exit();
 }
@@ -45,7 +46,8 @@ function assert_relocate($condition, $message, $location = "/")
 {
   if (!$condition)
     {
-      LOG::event("RELOCATE", $message);
+      if (class_exists('LOG'))
+        LOG::event("RELOCATE", $message);
       redirect_and_exit($location);
     }
 }
@@ -60,9 +62,13 @@ function assert_fatal($condition, $message)
 {
   if (!$condition)
     {
-      LOG::event("FATAL", $message);
-      ANALYTICS::finish();
-      echo '<b>FATAL:</b> ' . $message;
+      if (class_exists('LOG'))
+        LOG::event("FATAL", $message);
+      if (class_exists('ANALYTICS'))
+        ANALYTICS::finish(500);
+      header("HTTP/1.1 500 Internal Server Error");
+      echo '<h1>500 - Internal Server Error</h1>';
+      echo '<p><b>FATAL:</b> ' . $message . '</p>';
       exit();
     }
 }

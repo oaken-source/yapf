@@ -19,9 +19,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-// capture timestamp for performance analysis
-define('SCRIPT_START', microtime(true));
-
 // load user defined settings
 defined('SETTINGS_FILE') or define('SETTINGS_FILE', 'settings.php');
 if (file_exists(SETTINGS_FILE))
@@ -38,13 +35,13 @@ date_default_timezone_set(DEFAULT_TIMEZONE);
 defined('LOG_ENABLED') or define('LOG_ENABLED', false);
 if (LOG_ENABLED === true)
   {
-    assert_fatal(defined('LOG_SERVER') && defined('LOG_DBUSER') && defined('LOG_DBPASS'), 
-      "LOG_ENABLED set, but one of LOG_SERVER, LOG_DBUSER, LOG_DBPASS unset - fix your settings");
+    assert_fatal(defined('LOG_SERVER') && defined('LOG_DBUSER') && defined('LOG_DBPASS') && defined('LOG_DBNAME'), 
+      "invalid settings: LOG_ENABLED set, but one of LOG_SERVER, LOG_DBUSER, LOG_DBPASS unset");
   }
 defined('DB_ENABLED') or define('DB_ENABLED', false);
 if (DB_ENABLED === true)
   {
-    assert_fatal(defined('DB_SERVER') && defined('DB_DBUSER') && defined('DB_DBPASS'), 
-      "DB_ENABLED set, but one of DB_SERVER, DB_DBUSER, DB_DBPASS unset - fix your settings");
+    assert_fatal(defined('DB_SERVER') && defined('DB_DBUSER') && defined('DB_DBPASS') && defined('LOG_LOGNAME'), 
+      "invalid settings: DB_ENABLED set, but one of DB_SERVER, DB_DBUSER, DB_DBPASS unset");
   }
 ?>
