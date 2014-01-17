@@ -19,56 +19,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-class LOG
-{
-
-  private static $handle;
-
-  public static $name;
-
-  public static function init()
-  {
-    self::connect();
-
-    // evolve logdb, if necessary
-    require_once("yapf/db/evolve_log.php");
-  }
-
-  private static function connect()
-  {
-    self::$handle = mysqli_connect(LOG_SERVER, LOG_DBUSER, LOG_DBPASS);
-    assert_fatal(self::$handle, "LOG: unable to connect to database");
-    mysqli_select_db(self::$handle, $logdb_name);
-    self::$name = $logdb_name;
-  }
-
-  public static function event($loglevel, $message)
-  {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "
-        insert into log_events (loglevel, message) values
-          ('" . mysqli_real_escape_string(self::$handle, $loglevel) . "',
-          '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
-  }
-
-  public static function query($query, $message)
-  {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "
-        insert into log_queries (query, message) values
-          ('" . mysqli_real_escape_string(self::$handle, $query) . "', 
-           '" . mysqli_real_escape_string(self::$handle, $str) . "')");
-  }
-
-  public static function analytics($totaltime)
-  {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "
-        insert into analytics (request, totaltime) values
-          ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
-          '" . mysqli_real_escape_string(self::$handle, $totaltime) . "')");
-  }
-
-}
+define('INDEX_LOCATION', '/index-example.php');
 
 ?>

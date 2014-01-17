@@ -82,7 +82,7 @@ class RENDERER
       {
         echo self::$content;
       }
-
+    
     ANALYTICS::finish();
   }
 

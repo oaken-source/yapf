@@ -24,6 +24,9 @@ class ANALYTICS
 
   public static function finish()
   {
+    if (LOG_EABLED !== true)
+      return;
+
     $totaltime = microtime(true) - SCRIPT_START;
 
     LOG::analytics($totaltime);

@@ -19,34 +19,25 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+// load settings
+require_once("yapf/settings_default.php");
 
-define('SCRIPT_START', microtime(true));
-
-defined('INDEX') or define('INDEX', '/');
-
-date_default_timezone_set("Europe/Berlin");
-
-// auxiliary function definitions
+// load helper methods and classes
 require_once("yapf/util.php");
-
-// setup analytics wrapper
+require_once("yapf/session.php");
+require_once("yapf/mail.php");
+require_once("yapf/template.php");
+require_once("yapf/renderer.php");
 require_once("yapf/analytics.php");
-
-// connect to databases
 require_once("yapf/db/log.php");
 require_once("yapf/db/db.php");
 
-// upgrade databases, if necessary
-require_once("yapf/db/evolve.php");
+// initialize
+if (LOG_ENABLED === true)
+  LOG::init();
+if (DB_ENBLED === true)
+  DB::init();
 
-// initialize session
-require_once("yapf/session.php");
-
-// initialize mail handler
-require_once("yapf/mail.php");
-
-// setup html template and renderer class
-require_once("yapf/template.php");
-require_once("yapf/renderer.php");
+SESSION::init();
 
 ?>

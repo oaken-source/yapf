@@ -20,7 +20,9 @@
  ******************************************************************************/
 
 // this is necessary for core framework functionality.
-define("VALID_REQUEST", true);
+define('VALID_REQUEST', true);
+
+define('SETTINGS_FILE', 'settings-example.php');
 
 // setup framework environment
 require_once("yapf/setup.php");

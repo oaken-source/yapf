@@ -26,10 +26,17 @@ class DB
  
   public static $name;
 
+  public static function init()
+  {
+    self::connect();
+
+    // evolve db, if necessary
+    require_once("yapf/db/evolve_db.php");
+  }
+
   public static function connect()
   {
-    require($_SERVER['DOCUMENT_ROOT']."/yapf/db/access.php");
-    self::$handle = mysqli_connect($gamedb_server, $gamedb_user, $gamedb_pass);
+    self::$handle = mysqli_connect(DB_SERVER, DB_DBUSER, DB_DBPASS);
     assert_fatal(self::$handle, "DB: unable to connect to database");
     mysqli_select_db(self::$handle, $gamedb_name);
     self::$name = $gamedb_name;
@@ -42,6 +49,8 @@ class DB
 
   public static function query($format)
   {
+    assert_fatal(DB_ENABLED === true, "DB_ENABLED not set, but DB::query(...) used. fix your settings");
+
     $query = $format . ' ';
 
     $argc = func_num_args();
@@ -113,7 +122,5 @@ class DB
   }
 
 }
-
-DB::connect();
 
 ?>

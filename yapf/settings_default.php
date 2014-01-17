@@ -19,24 +19,32 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-/* fill out the values below and rename to access.php. */
+// capture timestamp for performance analysis
+define('SCRIPT_START', microtime(true));
 
-// this user needs R/W access to $logdb_name
-$logdb_user = "";
-$logdb_pass = "";
-$logdb_name = "";
-$logdb_server = "";
+// load user defined settings
+defined('SETTINGS_FILE') or define('SETTINGS_FILE', 'settings.php');
+if (file_exists(SETTINGS_FILE))
+  require_once(SETTINGS_FILE);
 
-// this user needs R/W access to $gamedb_name
-$gamedb_user = "";
-$gamedb_pass = "";
-$gamedb_name = "";
-$gamedb_server = "";
+// root page for redirection
+defined('INDEX_LOCATION') or define('INDEX_LOCATION', '/');
 
-// this user needs to be able to create databases, tables, etc..
-// only required for automatic database evolution, so you may leave this blank.
-$dbadmin_user = "";
-$dbadmin_pass = "";
-$dbadmin_server = "";
+// timezone
+defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
+date_default_timezone_set(DEFAULT_TIMEZONE);
 
+// database access controls
+defined('LOG_ENABLED') or define('LOG_ENABLED', false);
+if (LOG_ENABLED === true)
+  {
+    assert_fatal(defined('LOG_SERVER') && defined('LOG_DBUSER') && defined('LOG_DBPASS'), 
+      "LOG_ENABLED set, but one of LOG_SERVER, LOG_DBUSER, LOG_DBPASS unset - fix your settings");
+  }
+defined('DB_ENABLED') or define('DB_ENABLED', false);
+if (DB_ENABLED === true)
+  {
+    assert_fatal(defined('DB_SERVER') && defined('DB_DBUSER') && defined('DB_DBPASS'), 
+      "DB_ENABLED set, but one of DB_SERVER, DB_DBUSER, DB_DBPASS unset - fix your settings");
+  }
 ?>

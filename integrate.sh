@@ -30,6 +30,6 @@ files="yapf manage.py"
 code=/home/andi/code
 
 # kalindor-legacy
-rsync -av --exclude=".*" $files $code/kalindor-legacy/
+rsync -av --delete --exclude=".*" $files $code/kalindor-legacy/
 
 echo "all up to date"

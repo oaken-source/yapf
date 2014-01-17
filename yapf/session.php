@@ -108,6 +108,4 @@ class SESSION
 
 }
 
-SESSION::init();
-
 ?>
