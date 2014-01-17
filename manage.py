@@ -23,7 +23,7 @@ import sys;
 import os;
 
 index_php_template = """
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php"); 
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php"); 
 
 RENDERER::setTitle("%s");
 RENDERER::setTemplate("%s.php");
@@ -32,7 +32,7 @@ RENDERER::setTemplate("%s.php");
 """
 
 template_php_template = """
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php"); ?>
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php"); ?>
 
 <h1>%s</h1>
 """

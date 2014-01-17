@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -52,12 +52,12 @@ class RENDERER
     if (file_exists("pages/" . $page . "/index.php"))
       {
         self::$page = $page;
-        require_once("pages/" . $page . "/index.php");
+        require("pages/" . $page . "/index.php");
       }
     elseif (file_exists("pages/404/index.php"))
       {
         self::$page = "404";
-        require_once("pages/404/index.php");
+        require("pages/404/index.php");
       }
     else
       {

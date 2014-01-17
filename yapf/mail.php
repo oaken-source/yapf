@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -19,36 +19,9 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-class ANALYTICS
+class MAIL
 {
 
-  private static $time_start = SCRIPT_START;
-
-  public static function finish()
-  {
-    $querycount = 0;
-    $querytime_total = 0;
-    $querytime_max = 0;
-    $query_longest = "";
-
-    $querylog = DB::getQueryLog();
-    foreach($querylog as $query)
-      {
-        ++$querycount;
-        $querytime_total += $query['elapsed'];
-        if ($query['elapsed'] > $querytime_max)
-          {
-            $querytime_max = $query['elapsed'];
-            $query_longest = $query['query'];
-          }
-      }
-
-    // TODO: html validation
-
-    $totaltime = microtime(true) - self::$time_start;
-
-    LOG::analytics($totaltime, $querycount, $querytime_total, $querytime_max, $query_longest);
-  }
 
 }
 

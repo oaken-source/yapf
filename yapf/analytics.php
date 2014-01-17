@@ -1,4 +1,4 @@
-<?php
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -19,16 +19,16 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-// this is necessary for core framework functionality.
-define("VALID_REQUEST", true);
+class ANALYTICS
+{
 
-// setup framework environment
-require_once("yapf/setup.php");
+  public static function finish()
+  {
+    $totaltime = microtime(true) - SCRIPT_START;
 
-// choose what page you want to request
-$page = 'index';
+    LOG::analytics($totaltime);
+  }
 
-// render the given page
-RENDERER::renderPage($page);
+}
 
 ?>

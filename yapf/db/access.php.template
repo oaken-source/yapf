@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -19,38 +19,24 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-class T
-{
+/* fill out the values below and rename to access.php. */
 
-  private $file;
-  private $args;
+// this user needs R/W access to $logdb_name
+$logdb_user = "";
+$logdb_pass = "";
+$logdb_name = "";
+$logdb_server = "";
 
-  public function __construct($file = "", $args = array())
-  {
-    $this->file = $file;
-    $this->args = $args;
-  }
+// this user needs R/W access to $gamedb_name
+$gamedb_user = "";
+$gamedb_pass = "";
+$gamedb_name = "";
+$gamedb_server = "";
 
-  public function __get($key)
-  {
-    return $this->args[$key];
-  }
-
-  public function __set($key, $value)
-  {
-    $this->args[$key] = $value;
-  }
-
-  public function filter($str)
-  {
-    return htmlspecialchars($str);
-  }
-
-  public function render()
-  {
-    require($this->file);
-  }
-
-}
+// this user needs to be able to create databases, tables, etc..
+// only required for automatic database evolution, so you may leave this blank.
+$dbadmin_user = "";
+$dbadmin_pass = "";
+$dbadmin_server = "";
 
 ?>

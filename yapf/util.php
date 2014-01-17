@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -20,27 +20,6 @@
  ******************************************************************************/
 
 
-/* check if a given value is contained in a given array, and return the array
- * version, if found
- *
- * params:
- *   needle - the search value
- *   haystack - the array to search
- * 
- * returns:
- *   a value from the array, if a match is found, NULL otherwise
- */
-function sanitize_from_array($needle, $haystack, $default = NULL)
-{
-  $result = $default;
-
-  $key = array_search($needle, $haystack, TRUE);
-  if ($key !== FALSE && $key !== NULL)
-    $result = $haystack[$key];
-
-  return $result;
-}
-
 /* redirect to a given location and exit the script
  *
  * params:
@@ -51,18 +30,6 @@ function redirect_and_exit($location = "/")
   ANALYTICS::finish();
   header("Location: " . $location);
   exit();
-}
-
-/* check a given condition and log an event to admin database if not met.
- *
- * params:
- *   condition - the condition to test
- *   message - the message to log
- */
-function assert_log($condition, $message)
-{
-  if (!$condition)
-    LOG::failedAssert("[RELOCATE] " . $message);
 }
 
 /* check a given condition and redirect to the given location (default /)
@@ -78,7 +45,7 @@ function assert_relocate($condition, $message, $location = "/")
 {
   if (!$condition)
     {
-      LOG::failedAssert("[RELOCATE] " . $message);
+      LOG::event("RELOCATE", $message);
       redirect_and_exit($location);
     }
 }
@@ -93,7 +60,7 @@ function assert_fatal($condition, $message)
 {
   if (!$condition)
     {
-      LOG::failedAssert("[FATAL] " . $message);
+      LOG::event("FATAL", $message);
       ANALYTICS::finish();
       echo '<b>FATAL:</b> ' . $message;
       exit();

@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -26,58 +26,9 @@ class DBADMIN
 
   public static function connect()
   {
-    require("control/db/access.php");
+    require("yapf/db/access.php");
     self::$handle = mysqli_connect($dbadmin_server, $dbadmin_user, $dbadmin_pass);
     assert_fatal(self::$handle, "DBADMIN: unable to connect to database");
-  }
-
-  // get the current evolution id.
-  // special values:
-  //   -3 : database does not exist [commented out]
-  //   -2 : settings table does not exist
-  //   -1 : evolution value not in settings database
-  //   any nonnegative integer: regular evolution id
-  public static function getEvolutionId()
-  {
-    $res = mysqli_query(self::$handle, " 
-      select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA 
-        where SCHEMA_NAME = '" . LOG::$name . "'");
-    if ($res && !mysqli_num_rows($res))
-      return -3;
- 
-    //if (!mysqli_num_rows(self::query("
-    //  select TABLE_NAME from INFORMATION_SCHEMA.TABLES 
-    //    where TABLE_SCHEMA = '" . LOG::$name . "' 
-    //    and TABLE_NAME = 'settings'")))
-    //  return -2;
-
-    $res = mysqli_query(self::$handle, "
-      select value from " . LOG::$name . ".settings 
-        where `key` = 'db_evolution'");
-    if (!$res)
-      return -2;
-    elseif (!mysqli_num_rows($res))
-      return -1;
-  
-    $evolution = mysqli_fetch_assoc($res);
-    return $evolution['value'];
-  }
-
-  // set the new evolution id
-  public static function setEvolutionId($id)
-  {
-    self::query("
-      update " . LOG::$name . ".settings 
-        set value = '".$id."' 
-        where `key` = 'db_evolution'");
-  }
-
-  // creates initial datases - used in evolution -3
-  public static function createDatabase()
-  {
-    require("control/db/access.php");
-    self::query("CREATE DATABASE " . LOG::$name);
-    self::query("CREATE DATABASE " . DB::$name);
   }
 
   // no checking is performed - use with care, or not at all!

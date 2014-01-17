@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -19,9 +19,37 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-class MAIL
+class T
 {
 
+  private $file;
+  private $args;
+
+  public function __construct($file = "", $args = array())
+  {
+    $this->file = $file;
+    $this->args = $args;
+  }
+
+  public function __get($key)
+  {
+    return $this->args[$key];
+  }
+
+  public function __set($key, $value)
+  {
+    $this->args[$key] = $value;
+  }
+
+  public function filter($str)
+  {
+    return htmlspecialchars($str);
+  }
+
+  public function render()
+  {
+    require($this->file);
+  }
 
 }
 

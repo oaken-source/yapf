@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -24,13 +24,11 @@ class DB
   
   private static $handle;
  
-  private static $querylog = array();
-
   public static $name;
 
   public static function connect()
   {
-    require($_SERVER['DOCUMENT_ROOT']."/control/db/access.php");
+    require($_SERVER['DOCUMENT_ROOT']."/yapf/db/access.php");
     self::$handle = mysqli_connect($gamedb_server, $gamedb_user, $gamedb_pass);
     assert_fatal(self::$handle, "DB: unable to connect to database");
     mysqli_select_db(self::$handle, $gamedb_name);
@@ -63,7 +61,7 @@ class DB
           case 'e':
             if ($index_args >= $argc)
               {
-                LOG::failedQuery($format, "not enough arguments for format");
+                LOG::query($format, "not enough arguments for format");
                 return false;
               }
             $query = substr_replace($query, DB::escape($argv[$index_args]), $index_query, 2);
@@ -73,7 +71,7 @@ class DB
           case 'u':
             if ($index_args >= $argc)
               {
-                LOG::failedQuery($format, "not enough arguments for format");
+                LOG::query($format, "not enough arguments for format");
                 return false;
               }
             $query = substr_replace($query, $argv[$index_args], $index_query, 2);
@@ -81,26 +79,20 @@ class DB
             $index_args++;
             break;
           default:
-            LOG::failedQuery($format, "unknown control sequence '%" . $query[$index_query + 1] . "'");
+            LOG::query($format, "unknown yapf sequence '%" . $query[$index_query + 1] . "'");
             return false;
           }
       }
 
     if ($index_args != $argc)
       {
-        LOG::failedQuery($format, "too many arguments for format");
+        LOG::query($format, "too many arguments for format");
         return false;
       }
 
-    $start = microtime(true);
-
     $res = mysqli_query(self::$handle, $query);
     if (!$res)
-      LOG::failedQuery($query, mysqli_error(self::$handle));
-
-    $elapsed = microtime(true) - $start;
-
-    self::$querylog[] = array('query' => $query, 'elapsed' => $elapsed);
+      LOG::query($query, mysqli_error(self::$handle));
 
     return $res;
   }
@@ -120,10 +112,6 @@ class DB
     return mysqli_insert_id(self::$handle);
   }
 
-  public static function getQueryLog()
-  {
-    return self::$querylog;
-  }
 }
 
 DB::connect();

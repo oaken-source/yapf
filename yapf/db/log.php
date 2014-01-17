@@ -1,4 +1,4 @@
-<?php require_once($_SERVER['DOCUMENT_ROOT']."/control/valid_request.php");
+<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 /******************************************************************************
  *                                    yapf                                    *
@@ -19,24 +19,48 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-/* fill out the values below and rename to access.php. */
+class LOG
+{
 
-// this user needs R/W access to $logdb_name
-$logdb_user = "";
-$logdb_pass = "";
-$logdb_name = "";
-$logdb_server = "";
+  private static $handle;
 
-// this user needs R/W access to $gamedb_name
-$gamedb_user = "";
-$gamedb_pass = "";
-$gamedb_name = "";
-$gamedb_server = "";
+  public static $name;
 
-// this user needs to be able to create databases, tables, etc..
-// only required for automatic database evolution, so you may leave this blank.
-$dbadmin_user = "";
-$dbadmin_pass = "";
-$dbadmin_server = "";
+  public static function connect()
+  {
+    require("yapf/db/access.php");
+    self::$handle = mysqli_connect($logdb_server, $logdb_user, $logdb_pass);
+    assert_fatal(self::$handle, "LOG: unable to connect to database");
+    mysqli_select_db(self::$handle, $logdb_name);
+    self::$name = $logdb_name;
+  }
+
+  public static function event($loglevel, $message)
+  {
+    mysqli_query(self::$handle, "
+      insert into log_events (loglevel, message) values
+        ('" . mysqli_real_escape_string(self::$handle, $loglevel) . "',
+         '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
+  }
+
+  public static function query($query, $message)
+  {
+    mysqli_query(self::$handle, "
+      insert into log_queries (query, message) values
+        ('" . mysqli_real_escape_string(self::$handle, $query) . "', 
+         '" . mysqli_real_escape_string(self::$handle, $str) . "')");
+  }
+
+  public static function analytics($totaltime)
+  {
+    mysqli_query(self::$handle, "
+      insert into analytics (request, totaltime) values
+        ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
+         '" . mysqli_real_escape_string(self::$handle, $totaltime) . "')");
+  }
+
+}
+
+LOG::connect();
 
 ?>
