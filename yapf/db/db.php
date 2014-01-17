@@ -29,7 +29,7 @@ class DB
     self::connect();
 
     // evolve db, if necessary
-    require_once("yapf/db/evolve_db.php");
+    //require_once("yapf/db/evolve_db.php");
   }
 
   private static function connect()
