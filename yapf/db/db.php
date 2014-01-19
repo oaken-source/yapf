@@ -40,8 +40,9 @@ class DB
   {
     // evolve db, if necessary
     require_once("yapf/db/evolve.php");
-
-    EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
+    
+    if (MAINTENANCE_MODE)
+      EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
   }
 
   public static function escape($str)

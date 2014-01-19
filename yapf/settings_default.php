@@ -27,6 +27,9 @@ if (file_exists(SETTINGS_FILE))
 // root page for redirection
 defined('INDEX_LOCATION') or define('INDEX_LOCATION', '/');
 
+// page modes
+defined('MAINTENANCE_MOCE') or define('MAINTENANCE_MODE', false);
+
 // timezone
 defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
 date_default_timezone_set(DEFAULT_TIMEZONE);
