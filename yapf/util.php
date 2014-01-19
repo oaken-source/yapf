@@ -25,7 +25,7 @@
  * params:
  *   location - the location to redirect to
  */
-function redirect_and_exit($location = "/")
+function redirect_and_exit($location = INDEX_LOCATION)
 {
   if (class_exists('ANALYTICS'))
     ANALYTICS::finish(302);
@@ -42,7 +42,7 @@ function redirect_and_exit($location = "/")
  *   message - the message to log
  *   location - the location to redirect to
  */
-function assert_relocate($condition, $message, $location = "/")
+function assert_relocate($condition, $message, $location = INDEX_LOCATION)
 {
   if (!$condition)
     {
@@ -79,7 +79,7 @@ function assert_fatal($condition, $message)
  *   delay - the time to wait before redirecting in seconds
  *   location - the location to redirect to
  */
-function redirect_delayed($delay, $location = "/")
+function redirect_delayed($delay, $location = INDEX_LOCATION)
 {
   header("Refresh: " . $delay . "; URL=" . $location);
 }

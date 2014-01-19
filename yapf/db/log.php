@@ -61,7 +61,7 @@ class LOG
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into analytics (request, totaltime, http_status) values
+        insert into log_analytics (request, totaltime, http_status) values
           ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
            '" . mysqli_real_escape_string(self::$handle, $totaltime) . "',
            '" . mysqli_real_escape_string(self::$handle, $http_status) . "')");

@@ -19,4 +19,55 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+require_once("yapf/db/evolve.php");
+
+// this is the yapf log tables database schema.
+$log_schema = array(
+  'name' => '__yapf_log_schema',
+  'tables' => array(
+    array(
+      'name' => '__yapf_evolutions',
+      'columns' => array(
+        array('name' => 'identifier', 'type' => 'varchar(128)'),
+        array('name' => 'name', 'type' => 'varchar(512)'),
+        array('name' => 'evolution', 'type' => 'varchar(128)'),
+      ),
+      'primary_key' => 'identifier'
+    ),
+    array(
+      'name' => '__yapf_log_events',
+      'columns' => array(
+        array('name' => 'id', 'auto_increment' => true),
+        array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
+        array('name' => 'loglevel', 'type' => 'varchar(64)'),
+        array('name' => 'message', 'type' => 'varchar(1024)'),
+      ),
+      'primary_key' => 'id'
+    ),
+    array(
+      'name' => '__yapf_log_queries',
+      'columns' => array(
+        array('name' => 'id', 'auto_increment' => true),
+        array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
+        array('name' => 'query', 'type' => 'varchar(1024)'),  
+        array('name' => 'message', 'type' => 'varchar(1024)')
+      ),
+      'primary_key' => 'id'
+    ),
+    array(
+      'name' => '__yapf_log_analytics',
+      'columns' => array(
+        array('name' => 'id', 'auto_increment' => true),
+        array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
+        array('name' => 'request', 'type' => 'varchar(1024)'),
+        array('name' => 'totaltime', 'type' => 'double'),
+        array('name' => 'http_status', 'type' => 'int')
+      ),
+      'primary_key' => 'id'
+    ),
+  ),
+);
+
+EVOLVE::start(LOG_SERVER, LOG_DBUSER, LOG_DBPASS, LOG_DBNAME, $log_schema);
+
 ?>

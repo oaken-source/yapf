@@ -24,11 +24,20 @@ class DBADMIN
 
   private static $handle;
 
-  public static function connect()
+  public static function connect($server, $dbuser, $dbpass)
   {
-    require("yapf/db/access.php");
-    self::$handle = mysqli_connect($dbadmin_server, $dbadmin_user, $dbadmin_pass);
+    self::$handle = mysqli_connect($server, $dbuser, $dbpass);
     assert_fatal(self::$handle, "DBADMIN: unable to connect to database");
+  }
+
+  public static function disconnect()
+  {
+    mysqli_close(self::$handle);
+  }
+
+  public static function escape($str)
+  {
+    return mysqli_real_escape_string(self::$handle, $str);
   }
 
   // no checking is performed - use with care, or not at all!
@@ -41,8 +50,16 @@ class DBADMIN
     return $res;
   }
 
-}
+  public static function fetch($res)
+  {
+    return mysqli_fetch_assoc($res);
+  }
 
-DBADMIN::connect();
+  public static function rows($res)
+  {
+    return mysqli_num_rows($res);
+  }
+
+}
 
 ?>

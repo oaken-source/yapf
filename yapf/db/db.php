@@ -27,9 +27,6 @@ class DB
   public static function init()
   {
     self::connect();
-
-    // evolve db, if necessary
-    //require_once("yapf/db/evolve_db.php");
   }
 
   private static function connect()
@@ -37,6 +34,14 @@ class DB
     self::$handle = mysqli_connect(DB_SERVER, DB_DBUSER, DB_DBPASS);
     assert_fatal(self::$handle, "DB: unable to connect to database");
     mysqli_select_db(self::$handle, DB_DBNAME);
+  }
+
+  public static function setSchema($schema)
+  {
+    // evolve db, if necessary
+    require_once("yapf/db/evolve.php");
+
+    EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
   }
 
   public static function escape($str)
