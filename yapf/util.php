@@ -68,7 +68,7 @@ function assert_fatal($condition, $message)
         ANALYTICS::finish(500);
       header("HTTP/1.1 500 Internal Server Error");
       echo '<h1>500 - Internal Server Error</h1>';
-      echo '<p><b>FATAL:</b> ' . $message . '</p>';
+      echo '<p><b>FATAL:</b> ' . htmlentities($message) . '</p>';
       exit();
     }
 }
@@ -96,50 +96,17 @@ function sha512($str = NULL)
   return hash("sha512", $str);
 }
 
-/* generate a human readable string representing a time period
- *
- * params:
- *   t - the time period in seconds
- *
- * returns:
- *   a string representing the time passed, e.g. '2 months ago', 'now'
+/* check a given file for a set of features required for yapf interoperability
  */
-function human_readable_time_interval($t)
+function check_file_integrity($filename)
 {
-  $t = (int)$t;
+  $file = fopen($filename, 'r');
+  $line = fgets($file);
+  fclose($file);
 
-  if ($t <= 60)
-    return $t . " Sekunde" . ($t > 1 ? 'n' : '');
-  
-  $t = (int)($t / 60);
-
-  if ($t < 60)
-    return $t . " Minute" . ($t > 1 ? 'n' : '');
-
-  $t = (int)($t / 60);
-
-  if ($t < 24)
-    return $t . " Stunde" . ($t > 1 ? 'n' : '');
-
-  $t = (int)($t / 24);
-
-  if ($t < 7)
-    return $t . " Tag" . ($t > 1 ? 'en' : '');
-
-  if ($t < 30)
-    {
-      $tmp = (int)($t / 7);
-      return $tmp . " Woche" . ($tmp > 1 ? 'n' : '');
-    }
-
-  if ($t < 365)
-    {
-      $tmp = (int)($t / 30);
-      return $tmp . " Monat" . ($tmp > 1 ? 'en' : '');
-    }
-
-  $t = (int)($t / 365);
-  return $t . " Jahr" . ($t > 1 ? 'en' : '');
+  assert_fatal(
+    strpos($line, '<?php require_once($_SERVER[\'DOCUMENT_ROOT\']."/yapf/valid_request.php");') === 0,
+    'included file `' . $filename . '` not under request control. (add `<?php yapf_require_once($_SERVER[\'DOCUMENT_ROOT\']."/yapf/valid_request.php");`)');
 }
 
-?>
+?> 

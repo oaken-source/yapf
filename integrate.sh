@@ -32,4 +32,7 @@ code=/home/andi/code
 # kalindor-legacy
 rsync -av --delete --exclude=".*" $files $code/kalindor-legacy/
 
+# graprof.grapentin.org
+rsync -av --delete --exclude=".*" $files $code/grapentin.org/graprof/
+
 echo "all up to date"

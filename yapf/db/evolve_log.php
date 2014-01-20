@@ -29,7 +29,7 @@ $log_schema = array(
       'name' => '__yapf_evolutions',
       'columns' => array(
         array('name' => 'identifier', 'type' => 'varchar(128)'),
-        array('name' => 'name', 'type' => 'varchar(512)'),
+        array('name' => 'name', 'type' => 'text'),
         array('name' => 'evolution', 'type' => 'varchar(128)'),
       ),
       'primary_key' => 'identifier'
@@ -39,8 +39,8 @@ $log_schema = array(
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
-        array('name' => 'loglevel', 'type' => 'varchar(64)'),
-        array('name' => 'message', 'type' => 'varchar(1024)'),
+        array('name' => 'loglevel', 'type' => 'text'),
+        array('name' => 'message', 'type' => 'text'),
       ),
       'primary_key' => 'id'
     ),
@@ -49,8 +49,8 @@ $log_schema = array(
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
-        array('name' => 'query', 'type' => 'varchar(1024)'),  
-        array('name' => 'message', 'type' => 'varchar(1024)')
+        array('name' => 'query', 'type' => 'text'),  
+        array('name' => 'message', 'type' => 'text')
       ),
       'primary_key' => 'id'
     ),
@@ -59,7 +59,7 @@ $log_schema = array(
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
-        array('name' => 'request', 'type' => 'varchar(1024)'),
+        array('name' => 'request', 'type' => 'text'),
         array('name' => 'totaltime', 'type' => 'double'),
         array('name' => 'http_status', 'type' => 'int')
       ),

@@ -24,7 +24,7 @@ class ANALYTICS
 
   public static function finish($http_status = 200)
   {
-    if (LOG_EABLED !== true)
+    if (LOG_ENABLED !== true)
       return;
 
     $totaltime = microtime(true) - SCRIPT_START;

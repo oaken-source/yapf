@@ -52,11 +52,13 @@ class RENDERER
     if (file_exists("pages/" . $page . "/index.php"))
       {
         self::$page = $page;
+        check_file_integrity("pages/" . $page . "/index.php");
         require("pages/" . $page . "/index.php");
       }
     elseif (file_exists("pages/404/index.php"))
       {
         self::$page = "404";
+        check_file_integrity("pages/404/index.php");
         require("pages/404/index.php");
       }
     else

@@ -24,9 +24,6 @@ class SESSION
 
   public static function init()
   {
-    ini_set('session.gc_probability', 0);
-    ini_set('session.save_path', 'sessions');
-
     session_start();
     if (isset($_SESSION['account']['id']))
       {

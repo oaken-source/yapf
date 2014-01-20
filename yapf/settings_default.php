@@ -22,17 +22,23 @@
 // load user defined settings
 defined('SETTINGS_FILE') or define('SETTINGS_FILE', 'settings.php');
 if (file_exists(SETTINGS_FILE))
-  require_once(SETTINGS_FILE);
+  {
+    check_file_integrity(SETTINGS_FILE);
+    require_once(SETTINGS_FILE);
+  }
 
 // root page for redirection
 defined('INDEX_LOCATION') or define('INDEX_LOCATION', '/');
 
-// page modes
-defined('MAINTENANCE_MOCE') or define('MAINTENANCE_MODE', false);
+// session stuff
+defined('SESSION_PATH') or define('SESSION_PATH', '/tmp');
+ini_set('session.gc_probability', 0);
+ini_set('session.save_path', SESSION_PATH);
 
 // timezone
 defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
 date_default_timezone_set(DEFAULT_TIMEZONE);
+
 
 // database access controls
 defined('LOG_ENABLED') or define('LOG_ENABLED', false);
@@ -47,4 +53,5 @@ if (DB_ENABLED === true)
     assert_fatal(defined('DB_SERVER') && defined('DB_DBUSER') && defined('DB_DBPASS') && defined('DB_DBNAME'), 
       "invalid settings: DB_ENABLED set, but one of DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME unset");
   }
+ 
 ?>

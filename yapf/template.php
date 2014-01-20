@@ -48,6 +48,7 @@ class T
 
   public function render()
   {
+    check_file_integrity($this->file);
     require($this->file);
   }
 

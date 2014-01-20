@@ -43,7 +43,7 @@ class LOG
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into log_events (loglevel, message) values
+        insert into __yapf_log_events (loglevel, message) values
           ('" . mysqli_real_escape_string(self::$handle, $loglevel) . "',
            '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
   }
@@ -52,7 +52,7 @@ class LOG
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into log_queries (query, message) values
+        insert into __yapf_log_queries (query, message) values
           ('" . mysqli_real_escape_string(self::$handle, $query) . "', 
            '" . mysqli_real_escape_string(self::$handle, $str) . "')");
   }
@@ -61,7 +61,7 @@ class LOG
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into log_analytics (request, totaltime, http_status) values
+        insert into __yapf_log_analytics (request, totaltime, http_status) values
           ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
            '" . mysqli_real_escape_string(self::$handle, $totaltime) . "',
            '" . mysqli_real_escape_string(self::$handle, $http_status) . "')");
