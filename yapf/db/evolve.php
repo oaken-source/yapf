@@ -52,10 +52,17 @@ class EVOLVE
     $schema_id = sha512(($schema['id'] ? $schema['id'] : $schema['name']));
     $schema_hash = sha512(serialize($schema));
 
+    $evolved = False;
+
     if (self::$evolutions[$schema_id]['evolution'] !== $schema_hash)
-      self::evolve_schema($schema, $schema_id, $schema_hash);
+      {
+        $evolved = True;
+        self::evolve_schema($schema, $schema_id, $schema_hash);
+      }
 
     DBADMIN::disconnect();
+
+    return $evolved;
   }
 
   private static function evolve_schema($schema, $schema_id, $schema_hash)
@@ -90,6 +97,7 @@ class EVOLVE
 
     self::create_table_if_not_exists($table);
     self::upgrade_table($table);
+    self::insert_defaults($table);
 
     DBADMIN::query("
       replace into `__yapf_evolutions`
@@ -146,7 +154,7 @@ class EVOLVE
                 add column `" . DBADMIN::escape($column['name']) . "` 
                   " . DBADMIN::escape($column['type']) . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
-                  " . ($column['default'] ? DBADMIN::escape($column['default']) : '') . "
+                  " . ($column['default'] ? "default '" . DBADMIN::escape($column['default']) . "'" : '') . "
                   " . DBADMIN::escape($previous_column));
           }
         else
@@ -156,12 +164,28 @@ class EVOLVE
                 change column `" . DBADMIN::escape($column['name']) . "` `" . DBADMIN::escape($column['name']) . "` 
                   " . DBADMIN::escape($column['type']) . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
-                  " . ($column['default'] ? "default " . DBADMIN::escape($column['default']) : '') . "
+                  " . ($column['default'] ? "default '" . DBADMIN::escape($column['default']) . "'" : '') . "
                   " . DBADMIN::escape($previous_column));
           }
 
         $previous_column = "after `" . $column['name'] . "`";
       } 
+  }
+
+  private static function insert_defaults($table)
+  {
+    $res = DB::query("select * from `" . DBADMIN::escape($table['name']) . "`");
+    if (!DB::rows($res) && isset($table['defaults']))
+      {
+        foreach ($table['defaults'] as $default)
+          {
+            DBADMIN::query("
+              insert into `" . DBADMIN::escape($table['name']) . "`
+                  (`".implode("`, `", array_keys($default))."`)
+                values
+                  ('".implode("', '", array_map("DBADMIN::escape", $default))."')");
+          }
+      }
   }
 
 }

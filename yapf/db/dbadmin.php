@@ -35,9 +35,9 @@ class DBADMIN
     mysqli_close(self::$handle);
   }
 
-  public static function escape($str)
+  public static function escape($x)
   {
-    return mysqli_real_escape_string(self::$handle, $str);
+    return mysqli_real_escape_string(self::$handle, $x);
   }
 
   // no checking is performed - use with care, or not at all!

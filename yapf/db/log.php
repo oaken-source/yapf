@@ -48,23 +48,86 @@ class LOG
            '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
   }
 
-  public static function query($query, $message)
+  public static function getEvents()
+  {
+    $result = array();
+
+    if (LOG_ENABLED === true)
+      {
+        $res = mysqli_query(self::$handle, "select * from __yapf_log_events");
+        while ($row = mysqli_fetch_assoc($res))
+          $result[] = $row;
+      }
+
+    return $result;
+  }
+
+  public static function clearEvents()
+  {
+    if (LOG_ENABLED === true)
+      mysqli_query(self::$handle, "truncate table __yapf_log_events");
+  }
+
+  public static function query($query, $message, $elapsed = 0.0)
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into __yapf_log_queries (query, message) values
+        insert into __yapf_log_queries (query, message, elapsed) values
           ('" . mysqli_real_escape_string(self::$handle, $query) . "', 
-           '" . mysqli_real_escape_string(self::$handle, $str) . "')");
+           '" . mysqli_real_escape_string(self::$handle, $message) . "',
+           '" . mysqli_real_escape_string(self::$handle, $elapsed) . "')");
+  }
+
+  public static function getQueries()
+  {
+    $result = array();
+
+    if (LOG_ENABLED === true)
+      {
+        $res = mysqli_query(self::$handle, "select * from __yapf_log_queries");
+        while ($row = mysqli_fetch_assoc($res))
+          $result[] = $row;
+      }
+
+    return $result;
+  }
+
+  public static function clearQueries()
+  {
+    if (LOG_ENABLED === true)
+      mysqli_query(self::$handle, "truncate table __yapf_log_queries");
   }
 
   public static function analytics($totaltime, $http_status)
   {
     if (LOG_ENABLED === true)
       mysqli_query(self::$handle, "
-        insert into __yapf_log_analytics (request, totaltime, http_status) values
+        insert into __yapf_log_analytics (request, referer, remote, totaltime, http_status) values
           ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
+           '" . mysqli_real_escape_string(self::$handle, $_SERVER['HTTP_REFERER']) . "',
+           '" . mysqli_real_escape_string(self::$handle, $_SERVER['REMOTE_ADDR']) . "',
            '" . mysqli_real_escape_string(self::$handle, $totaltime) . "',
            '" . mysqli_real_escape_string(self::$handle, $http_status) . "')");
+  }
+
+  public static function getAnalytics()
+  {
+    $result = array();
+
+    if (LOG_ENABLED === true)
+      {
+        $res = mysqli_query(self::$handle, "select * from __yapf_log_analytics order by id desc");
+        while ($row = mysqli_fetch_assoc($res))
+          $result[] = $row;
+      }
+
+    return $result;
+  }
+
+  public static function clearAnalytics()
+  {
+    if (LOG_ENABLED === true)
+      mysqli_query(self::$handle, "truncate table __yapf_log_analytics");
   }
 
 }

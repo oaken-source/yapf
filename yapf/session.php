@@ -21,23 +21,14 @@
 
 class SESSION
 {
+  
+  private static $messages = array();
 
   public static function init()
   {
     session_start();
-    if (isset($_SESSION['account']['id']))
-      {
-        $res = DB::query("
-          select id, UNIX_TIMESTAMP(premium) as premium
-            from accounts 
-            where id = '%e'", $_SESSION['account']['id']);
-        
-        if (!DB::rows($res))
-          self::logout();
-
-        $row = DB::fetch($res);
-        self::update($row);
-      }
+    if (isset($_SESSION['messages']))
+      self::$messages = unserialize($_SESSION['messages']);
   }
 
   public static function fini()
@@ -46,61 +37,23 @@ class SESSION
     session_destroy();
   }
 
-  public static function isLoggedIn()
+  public static function addMessage($message)
   {
-    return (isset($_SESSION['account']['id']));
+    self::$messages[] = $message;
+    $_SESSION['messages'] = serialize(self::$messages);
   }
 
-  public static function isPremium()
+  public static function hasMessages()
   {
-    return (isset($_SESSION['account']['premium']) && $_SESSION['account']['premium'] > SCRIPT_START);
+    return (!empty(self::$messages));
   }
 
-  public static function login($accountname, $password)
+  public static function getMessages()
   {
-    $res = DB::query("
-      select id, password, password_salt, UNIX_TIMESTAMP(premium) as premium
-        from accounts 
-        where name = '%e'", $accountname);
-    if (!DB::rows($res))
-      return false;
-
-    $row = DB::fetch($res);
-
-    $pass_valid = sha512($row['password_salt'] . $password);
-    if ($pass_valid !== $row['password'])
-      return false;
-
-    self::update($row);
-
-    return true;
-  }
-
-  private static function update($account)
-  {
-    $_SESSION['account']['id'] = $account['id'];
-    $_SESSION['account']['premium'] = $account['premium'];
-  }
-
-  public static function logout()
-  {
-    self::fini();
-    redirect_and_exit("/index-new.php");
-  }
-
-  public static function requireLogin()
-  {
-    if (!isset($_SESSION['account']))
-      redirect_and_exit("/index-new.php");
-  }
-
-  public static function requireLogout()
-  {
-    if (isset($_SESSION['account']))
-      {
-        self::fini();
-        redirect_and_exit($_SERVER['REQUEST_URI']);
-      }
+    $result = self::$messages;
+    self::$messages = array();
+    $_SESSION['messages'] = serialize(self::$messages);
+    return $result;
   }
 
 }

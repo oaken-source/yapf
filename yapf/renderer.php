@@ -49,30 +49,37 @@ class RENDERER
 
   public static function renderPage($page)
   {
+    $status = 200;
     if (file_exists("pages/" . $page . "/index.php"))
       {
         self::$page = $page;
         check_file_integrity("pages/" . $page . "/index.php");
         require("pages/" . $page . "/index.php");
       }
-    elseif (file_exists("pages/404/index.php"))
-      {
-        self::$page = "404";
-        check_file_integrity("pages/404/index.php");
-        require("pages/404/index.php");
-      }
     else
       {
-        self::$content = "<h1>404 Not Found</h1><p>the page you requested could not be found</p>";
+        $status = 404;
+        header("HTTP/1.1 404 Not Found");
+        
+        if (file_exists("pages/404/index.php"))
+          {
+            self::$page = "404";
+            check_file_integrity("pages/404/index.php");
+            require("pages/404/index.php");
+          }
+        else
+          {
+            self::$content = "<h1>404 Not Found</h1><p>the page you requested could not be found</p>";
+          }
       }
 
     if (file_exists("templates/base.php"))
       {
         $template = new T("templates/base.php", array(
           'title' => self::$title,
-          'notices' => self::$notices,
           'content' => self::$content,
-          'extra_js' => self::$extra_js
+          'extra_js' => self::$extra_js,
+          'page' => self::$page,
         ));
         $template->render();
       }
@@ -84,8 +91,10 @@ class RENDERER
       {
         echo self::$content;
       }
-    
-    ANALYTICS::finish();
+  
+    $_SESSION['yapf']['last_rendered_request_url'] = $_SERVER['REQUEST_URI'];
+
+    ANALYTICS::finish($status);
   }
 
   public static function setTemplate($t, $args = array())

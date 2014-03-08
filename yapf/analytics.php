@@ -22,9 +22,16 @@
 class ANALYTICS
 {
 
+  private static $enabled = true;
+
+  public static function disable()
+  {
+    self::$enabled = false;
+  }
+
   public static function finish($http_status = 200)
   {
-    if (LOG_ENABLED !== true)
+    if (LOG_ENABLED !== true || self::$enabled !== true)
       return;
 
     $totaltime = microtime(true) - SCRIPT_START;

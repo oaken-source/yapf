@@ -34,6 +34,7 @@ class DB
     self::$handle = mysqli_connect(DB_SERVER, DB_DBUSER, DB_DBPASS);
     assert_fatal(self::$handle, "DB: unable to connect to database");
     mysqli_select_db(self::$handle, DB_DBNAME);
+    mysqli_set_charset(self::$handle, 'utf8');
   }
 
   public static function setSchema($schema)
@@ -41,7 +42,7 @@ class DB
     // evolve db, if necessary
     require_once("yapf/db/evolve.php");
    
-    EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
+    return EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
   }
 
   public static function escape($str)
@@ -52,6 +53,8 @@ class DB
   public static function query($format)
   {
     assert_fatal(DB_ENABLED === true, "DB_ENABLED not set, but DB::query(...) used. fix your settings");
+
+    $query_start_time = microtime(true);
 
     $query = $format . ' ';
 
@@ -104,6 +107,8 @@ class DB
     $res = mysqli_query(self::$handle, $query);
     if (!$res)
       LOG::query($query, mysqli_error(self::$handle));
+
+    LOG::query($query, "", microtime(true) - $query_start_time);
 
     return $res;
   }

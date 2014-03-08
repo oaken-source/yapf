@@ -27,6 +27,13 @@ if (file_exists(SETTINGS_FILE))
     require_once(SETTINGS_FILE);
   }
 
+// timezone
+defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
+date_default_timezone_set(DEFAULT_TIMEZONE);
+
+// capture timestamp for performance analysis
+define('SCRIPT_START', microtime(true));
+
 // root page for redirection
 defined('INDEX_LOCATION') or define('INDEX_LOCATION', '/');
 
@@ -35,10 +42,8 @@ defined('SESSION_PATH') or define('SESSION_PATH', '/tmp');
 ini_set('session.gc_probability', 0);
 ini_set('session.save_path', SESSION_PATH);
 
-// timezone
-defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
-date_default_timezone_set(DEFAULT_TIMEZONE);
-
+// charset
+ini_set('default_charset', 'utf-8');
 
 // database access controls
 defined('LOG_ENABLED') or define('LOG_ENABLED', false);

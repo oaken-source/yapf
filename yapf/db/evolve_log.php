@@ -49,8 +49,9 @@ $log_schema = array(
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
-        array('name' => 'query', 'type' => 'text'),  
-        array('name' => 'message', 'type' => 'text')
+        array('name' => 'query', 'type' => 'text'),
+        array('name' => 'message', 'type' => 'text'),
+        array('name' => 'elapsed', 'type' => 'double')
       ),
       'primary_key' => 'id'
     ),
@@ -60,6 +61,8 @@ $log_schema = array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
         array('name' => 'request', 'type' => 'text'),
+        array('name' => 'referer', 'type' => 'text'),
+        array('name' => 'remote', 'type' => 'varchar(16)'),
         array('name' => 'totaltime', 'type' => 'double'),
         array('name' => 'http_status', 'type' => 'int')
       ),

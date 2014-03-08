@@ -33,25 +33,6 @@ function redirect_and_exit($location = INDEX_LOCATION)
   exit();
 }
 
-/* check a given condition and redirect to the given location (default /)
- * if the condition is not met. Also, will log an event to admin database if
- * a message was specified.
- *
- * params:
- *   condition - the condition to test
- *   message - the message to log
- *   location - the location to redirect to
- */
-function assert_relocate($condition, $message, $location = INDEX_LOCATION)
-{
-  if (!$condition)
-    {
-      if (class_exists('LOG'))
-        LOG::event("RELOCATE", $message);
-      redirect_and_exit($location);
-    }
-}
-
 /* check a given condition and die horribly if not met.
  *
  * params:
@@ -109,4 +90,4 @@ function check_file_integrity($filename)
     'included file `' . $filename . '` not under request control. (add `<?php yapf_require_once($_SERVER[\'DOCUMENT_ROOT\']."/yapf/valid_request.php");`)');
 }
 
-?> 
+?>

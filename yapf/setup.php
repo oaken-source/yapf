@@ -19,9 +19,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-// capture timestamp for performance analysis
-define('SCRIPT_START', microtime(true));
-
 // get some basic utility methods
 require_once("yapf/util.php");
 

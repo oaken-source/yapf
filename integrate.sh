@@ -35,4 +35,7 @@ rsync -av --delete --exclude=".*" $files $code/kalindor-legacy/
 # graprof.grapentin.org
 rsync -av --delete --exclude=".*" $files $code/grapentin.org/graprof/
 
+# gallery.grapentin.org
+rsync -av --delete --exclude=".*" $files $code/grapentin.org/gallery/
+
 echo "all up to date"
