@@ -106,10 +106,12 @@ class DB
 
     $res = mysqli_query(self::$handle, $query);
     if (!$res)
-      LOG::query($query, mysqli_error(self::$handle));
+      {
+        LOG::query($query, mysqli_error(self::$handle));
+        return false;
+      }
 
     LOG::query($query, "", microtime(true) - $query_start_time);
-
     return $res;
   }
 
