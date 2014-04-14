@@ -45,12 +45,23 @@ $log_schema = array(
       'primary_key' => 'id'
     ),
     array(
-      'name' => '__yapf_log_queries',
+      'name' => '__yapf_log_queries_failed',
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
-        array('name' => 'query', 'type' => 'text'),
+        array('name' => 'format', 'type' => 'text'),
+        array('name' => 'arguments', 'type' => 'text'),
         array('name' => 'message', 'type' => 'text'),
+      ),
+      'primary_key' => 'id'
+    ),
+    array(
+      'name' => '__yapf_log_queries_profile',
+      'columns' => array(
+        array('name' => 'id', 'auto_increment' => true),
+        array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
+        array('name' => 'format', 'type' => 'text'),
+        array('name' => 'arguments', 'type' => 'text'),
         array('name' => 'elapsed', 'type' => 'double')
       ),
       'primary_key' => 'id'

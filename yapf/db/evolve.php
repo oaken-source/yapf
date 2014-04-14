@@ -78,10 +78,15 @@ class EVOLVE
 
     DBADMIN::query("
       replace into `__yapf_evolutions`
-        (`identifier`, `name`, `evolution`)
-      values
-        ('$schema_id', '" . DBADMIN::escape($schema['name']) . "', '$schema_hash')");
+          (`identifier`, `name`, `evolution`)
+        values
+          (:identifier, :name, :evolution)",
 
+      array(
+        ':identifier' => $schema_id,
+        ':name' => $schema['name'],
+        ':evolution' => $schema_hash,
+    ));
   }
 
   private static function evolve_table($table, $table_id, $table_hash)
@@ -92,8 +97,8 @@ class EVOLVE
 
     if ($table_current_name !== $table['name'])
       DBADMIN::query("
-        rename table `" . DBADMIN::escape($table_current_name) . "`
-          to `" . DBADMIN::escape($table['name']) . "`");
+        rename table `" . $table_current_name . "`
+          to `" . $table['name'] . "`");
 
     self::create_table_if_not_exists($table);
     self::upgrade_table($table);
@@ -101,30 +106,36 @@ class EVOLVE
 
     DBADMIN::query("
       replace into `__yapf_evolutions`
-        (`identifier`, `name`, `evolution`)
-      values
-        ('$table_id', '" . DBADMIN::escape($table['name']) . "', '$table_hash')");
+          (`identifier`, `name`, `evolution`)
+        values
+          (:identifier, :name, :evolution)",
+
+      array(
+        ':identifier' => $table_id,
+        ':name' => $table['name'],
+        ':evolution' => $table_hash,
+    ));
   }
 
   private static function create_table_if_not_exists($table)
   {
-    $query = "create table if not exists `" . DBADMIN::escape($table['name']) . "` (";
+    $query = "create table if not exists `" . $table['name'] . "` (";
 
     foreach ($table['columns'] as $column)
       {
         $column['type'] or $column['type'] = 'int';
-        $query .= "`" . DBADMIN::escape($column['name']) . "` " . DBADMIN::escape($column['type']) . " not null";
+        $query .= "`" . $column['name'] . "` " . $column['type'] . " not null";
         if ($column['auto_increment'])
           $query .= " auto_increment";
         if ($column['default'])
-          $query .= " default " . DBADMIN::escape($column['default']);
+          $query .= " default " . $column['default'];
         $query .= ", ";
       }
 
     if ($table['primary_key'])
-      $query .= "primary key (`" . DBADMIN::escape($table['primary_key']) . "`)";
+      $query .= "primary key (`" . $table['primary_key'] . "`)";
     
-    $query .= ") engine=" . ($table['engine'] ? DBADMIN::escape($table) : "innodb");
+    $query .= ") engine=" . ($table['engine'] ? $table['engine'] : "innodb");
 
     DBADMIN::query($query);
   }
@@ -132,15 +143,15 @@ class EVOLVE
   private static function upgrade_table($table)
   {
     DBADMIN::query("
-      alter table `" . DBADMIN::escape($table['name']) . "` 
-        engine = " . ($table['engine'] ? DBADMIN::escape($table) : "innodb"));
+      alter table `" . $table['name'] . "` 
+        engine = " . ($table['engine'] ? $table['engine'] : "innodb"));
 
     $res = DBADMIN::query("
       select * from information_schema.columns 
-        where table_schema = '" . DBADMIN::escape(self::$database) . "'
-          and table_name = '" . DBADMIN::escape($table['name']) . "'");
+        where table_schema = '" . self::$database . "'
+          and table_name = '" . $table['name'] . "'");
     $db_columns = array();
-    while ($row = DB::fetch($res))
+    while ($row = DBADMIN::fetch($res))
       $db_columns[$row['COLUMN_NAME']] = $row;
 
     $previous_column = "first";
@@ -150,22 +161,22 @@ class EVOLVE
         if (!$db_columns[$column['name']])
           {
             DBADMIN::query("
-              alter table `" . DBADMIN::escape($table['name']) . "` 
-                add column `" . DBADMIN::escape($column['name']) . "` 
-                  " . DBADMIN::escape($column['type']) . " not null
+              alter table `" . $table['name'] . "` 
+                add column `" . $column['name'] . "` 
+                  " . $column['type'] . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
-                  " . ($column['default'] ? "default '" . DBADMIN::escape($column['default']) . "'" : '') . "
-                  " . DBADMIN::escape($previous_column));
+                  " . ($column['default'] ? "default '" . $column['default'] . "'" : '') . "
+                  " . $previous_column);
           }
         else
           {
             DBADMIN::query("
-              alter table `" . DBADMIN::escape($table['name']) . "` 
-                change column `" . DBADMIN::escape($column['name']) . "` `" . DBADMIN::escape($column['name']) . "` 
-                  " . DBADMIN::escape($column['type']) . " not null
+              alter table `" . $table['name'] . "` 
+                change column `" . $column['name'] . "` `" . $column['name'] . "` 
+                  " . $column['type'] . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
-                  " . ($column['default'] ? "default '" . DBADMIN::escape($column['default']) . "'" : '') . "
-                  " . DBADMIN::escape($previous_column));
+                  " . ($column['default'] ? "default " . $column['default'] : '') . "
+                  " . $previous_column);
           }
 
         $previous_column = "after `" . $column['name'] . "`";
@@ -174,16 +185,16 @@ class EVOLVE
 
   private static function insert_defaults($table)
   {
-    $res = DB::query("select * from `" . DBADMIN::escape($table['name']) . "`");
-    if (!DB::rows($res) && isset($table['defaults']))
+    $res = DBADMIN::fetch(DBADMIN::query("select count(*) as num_rows from `" . $table['name'] . "`"));
+    if ($res['num_rows'] == 0 && isset($table['defaults']))
       {
         foreach ($table['defaults'] as $default)
           {
             DBADMIN::query("
-              insert into `" . DBADMIN::escape($table['name']) . "`
+              insert into `" . $table['name'] . "`
                   (`".implode("`, `", array_keys($default))."`)
                 values
-                  ('".implode("', '", array_map("DBADMIN::escape", $default))."')");
+                  ('".implode("', '", array_values($default))."')");
           }
       }
   }

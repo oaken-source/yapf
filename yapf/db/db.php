@@ -23,111 +23,74 @@ class DB
 {
   
   private static $handle;
- 
+
   public static function init()
   {
-    self::connect();
-  }
-
-  private static function connect()
-  {
-    self::$handle = mysqli_connect(DB_SERVER, DB_DBUSER, DB_DBPASS);
+    self::$handle = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_DBNAME, DB_DBUSER, DB_DBPASS);
     assert_fatal(self::$handle, "DB: unable to connect to database");
-    mysqli_select_db(self::$handle, DB_DBNAME);
-    mysqli_set_charset(self::$handle, 'utf8');
   }
 
   public static function setSchema($schema)
   {
     // evolve db, if necessary
     require_once("yapf/db/evolve.php");
-   
+
     return EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
   }
 
-  public static function escape($str)
-  {
-    return mysqli_real_escape_string(self::$handle, $str);
-  }
-
-  public static function query($format)
+  public static function query($format, $arguments = array())
   {
     assert_fatal(DB_ENABLED === true, "DB_ENABLED not set, but DB::query(...) used. fix your settings");
 
-    $query_start_time = microtime(true);
-
-    $query = $format . ' ';
-
-    $argc = func_num_args();
-    $argv = func_get_args();
-
-    $index_query = 0;
-    $index_args = 1;
-
-    while (($index_query = strpos($query, '%', $index_query)) !== false)
+    if (!is_array($arguments))
       {
-        switch ($query[$index_query + 1])
-          {
-          case '%':
-            $query = substr_replace($query, '', $index_query, 1);
-            $index_query++;
-            break;
-          case 'e':
-            if ($index_args >= $argc)
-              {
-                LOG::query($format, "not enough arguments for format");
-                return false;
-              }
-            $query = substr_replace($query, DB::escape($argv[$index_args]), $index_query, 2);
-            $index_query += strlen($argv[$index_args]);
-            $index_args++;
-            break;
-          case 'u':
-            if ($index_args >= $argc)
-              {
-                LOG::query($format, "not enough arguments for format");
-                return false;
-              }
-            $query = substr_replace($query, $argv[$index_args], $index_query, 2);
-            $index_query += strlen($argv[$index_args]);
-            $index_args++;
-            break;
-          default:
-            LOG::query($format, "unknown yapf sequence '%" . $query[$index_query + 1] . "'");
-            return false;
-          }
-      }
-
-    if ($index_args != $argc)
-      {
-        LOG::query($format, "too many arguments for format");
+        LOG::query_failed($format, $arguments, "[-1] \$arguments is expected to be an array");
         return false;
       }
+  
+    $prepare_time = microtime(true);
 
-    $res = mysqli_query(self::$handle, $query);
+    $statement = self::$handle->prepare($format);
+    if (!$statement)
+      {
+        $error = self::$handle->errorInfo();
+        print_r($error);
+        LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
+        return false;
+      }
+      
+    $prepare_time = microtime(true) - $prepare_time;
+
+    $execute_time = microtime(true);
+
+    $res = $statement->execute($arguments);
     if (!$res)
       {
-        LOG::query($query, mysqli_error(self::$handle));
+        $error = self::$handle->errorInfo();
+        print_r($error);
+        $error = $statement->errorInfo();
+        print_r($error);
+        LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
         return false;
       }
 
-    LOG::query($query, "", microtime(true) - $query_start_time);
-    return $res;
+    $execute_time = microtime(true) - $execute_time;
+
+    LOG::query_profile($format, $arguments, $prepare_time, $execute_time, 1);
+
+    return $statement;
   }
 
-  public static function fetch($query)
+  public static function fetch($statement)
   {
-    return mysqli_fetch_assoc($query);
-  }
-
-  public static function rows($query)
-  {
-    return mysqli_num_rows($query);
+    if ($statement instanceof PDOStatement)
+      return $statement->fetch(PDO::FETCH_ASSOC);
+    return false;
   }
 
   public static function insertId()
   {
-    return mysqli_insert_id(self::$handle);
+    return self::$handle->lastInsertId();
   }
 
 }

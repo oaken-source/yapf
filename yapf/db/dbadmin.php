@@ -26,38 +26,29 @@ class DBADMIN
 
   public static function connect($server, $dbuser, $dbpass)
   {
-    self::$handle = mysqli_connect($server, $dbuser, $dbpass);
+    self::$handle = new PDO("mysql:host=" . $server, $dbuser, $dbpass);
     assert_fatal(self::$handle, "DBADMIN: unable to connect to database");
   }
 
   public static function disconnect()
   {
-    mysqli_close(self::$handle);
+    self::$handle = NULL;
   }
 
-  public static function escape($x)
+  public static function query($format, $arguments = array())
   {
-    return mysqli_real_escape_string(self::$handle, $x);
+    $statement = self::$handle->prepare($format);
+    assert_fatal($statement, "DBADMIN: [" . self::$handle->errorCode() . "] " . self::$handle->errorInfo());
+
+    $res = $statement->execute($arguments);
+    assert_fatal($res, "DBADMIN: [" . $statement->errorCode() . "] " . $statement->errorInfo());
+
+    return $statement;
   }
 
-  // no checking is performed - use with care, or not at all!
-  public static function query($str)
+  public static function fetch($statement)
   {
-    $res = mysqli_query(self::$handle, $str);
-    assert_fatal($res, "DBADMIN: query failed: " . mysqli_error(self::$handle) . "<br>\n"
-        . "query was: \"" . $str . "\"<br>\n");
-
-    return $res;
-  }
-
-  public static function fetch($res)
-  {
-    return mysqli_fetch_assoc($res);
-  }
-
-  public static function rows($res)
-  {
-    return mysqli_num_rows($res);
+    return $statement->fetch(PDO::FETCH_ASSOC);
   }
 
 }

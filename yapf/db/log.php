@@ -26,110 +26,96 @@ class LOG
 
   public static function init()
   {
-    self::connect();
+    self::$handle = new PDO("mysql:host=" . LOG_SERVER . ";dbname=" . LOG_DBNAME, LOG_DBUSER, LOG_DBPASS);
+    assert_fatal(self::$handle, "LOGDB: unable to connect to database");
 
     // evolve logdb, if necessary
     require_once("yapf/db/evolve_log.php");
   }
 
-  private static function connect()
-  {
-    self::$handle = mysqli_connect(LOG_SERVER, LOG_DBUSER, LOG_DBPASS);
-    assert_fatal(self::$handle, "LOG: unable to connect to database");
-    mysqli_select_db(self::$handle, LOG_DBNAME);
-  }
-
   public static function event($loglevel, $message)
   {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "
-        insert into __yapf_log_events (loglevel, message) values
-          ('" . mysqli_real_escape_string(self::$handle, $loglevel) . "',
-           '" . mysqli_real_escape_string(self::$handle, $message) . "')"); 
+    if (LOG_ENABLED !== true)
+      return;
+
+    static $statement = NULL;
+    if ($statement != NULL)
+      $statement = self::$handle->prepare("
+        insert into __yapf_log_events 
+            (loglevel, message) 
+          values
+            (:loglevel, :message)");
+
+    $statement->execute(array(
+      ':loglevel' => $loglevel,
+      ':message' => $message,
+    ));
   }
 
-  public static function getEvents()
+  public static function query_failed($format, $arguments, $message)
   {
-    $result = array();
+    if (LOG_ENABLED !== true)
+      return;
 
-    if (LOG_ENABLED === true)
-      {
-        $res = mysqli_query(self::$handle, "select * from __yapf_log_events");
-        while ($row = mysqli_fetch_assoc($res))
-          $result[] = $row;
-      }
+    static $statement = NULL;
+    if ($statement == NULL)
+      $statement = self::$handle->prepare("
+        insert into __yapf_log_queries_failed 
+            (format, arguments, message) 
+          values 
+            (:format, :arguments, :message)");
 
-    return $result;
+    $statement->execute(array(
+      ':format' => $format,
+      ':arguments' => serialize($arguments),
+      ':message' => $message,
+    ));
   }
 
-  public static function clearEvents()
+  public static function query_profile($format, $arguments, $elapsed)
   {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "truncate table __yapf_log_events");
-  }
+    if (LOG_ENABLED !== true)
+      return;
 
-  public static function query($query, $message, $elapsed = 0.0)
-  {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "
-        insert into __yapf_log_queries (query, message, elapsed) values
-          ('" . mysqli_real_escape_string(self::$handle, $query) . "', 
-           '" . mysqli_real_escape_string(self::$handle, $message) . "',
-           '" . mysqli_real_escape_string(self::$handle, $elapsed) . "')");
-  }
+    static $statement = NULL;
+    if ($statement == NULL)
+      $statement = self::$handle->prepare("
+        insert into __yapf_log_queries_profile
+            (format, arguments, elapsed) 
+          values 
+            (:format, :arguments, :elapsed)");
 
-  public static function getQueries()
-  {
-    $result = array();
-
-    if (LOG_ENABLED === true)
-      {
-        $res = mysqli_query(self::$handle, "select * from __yapf_log_queries");
-        while ($row = mysqli_fetch_assoc($res))
-          $result[] = $row;
-      }
-
-    return $result;
-  }
-
-  public static function clearQueries()
-  {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "truncate table __yapf_log_queries");
+    $statement->execute(array(
+      ':format' => $format,
+      ':arguments' => serialize($arguments),
+      ':elapsed' => $elapsed,
+    ));
   }
 
   public static function analytics($totaltime, $http_status)
   {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "
-        insert into __yapf_log_analytics (request, referer, remote, totaltime, http_status) values
-          ('" . mysqli_real_escape_string(self::$handle, $_SERVER['REQUEST_URI']) . "',
-           '" . mysqli_real_escape_string(self::$handle, $_SERVER['HTTP_REFERER']) . "',
-           '" . mysqli_real_escape_string(self::$handle, $_SERVER['REMOTE_ADDR']) . "',
-           '" . mysqli_real_escape_string(self::$handle, $totaltime) . "',
-           '" . mysqli_real_escape_string(self::$handle, $http_status) . "')");
-  }
+    if (LOG_ENABLED !== true)
+      return;
+    
+    static $statement = NULL;
+    if ($statement == NULL)
+      $statement = self::$handle->prepare("
+        insert into __yapf_log_analytics 
+            (request, referer, remote, totaltime, http_status) 
+          values
+            (:request, :referer, :remote, :totaltime, :http_status)");
 
-  public static function getAnalytics()
-  {
-    $result = array();
-
-    if (LOG_ENABLED === true)
-      {
-        $res = mysqli_query(self::$handle, "select * from __yapf_log_analytics order by id desc");
-        while ($row = mysqli_fetch_assoc($res))
-          $result[] = $row;
-      }
-
-    return $result;
-  }
-
-  public static function clearAnalytics()
-  {
-    if (LOG_ENABLED === true)
-      mysqli_query(self::$handle, "truncate table __yapf_log_analytics");
+    $statement->execute(array(
+      ':request' => $_SERVER['REQUEST_URI'],
+      ':referer' => $_SERVER['HTTP_REFERER'],
+      ':remote' => $_SERVER['REMOTE_ADDR'],
+      ':totaltime' => $totaltime,
+      ':http_status' => $http_status,
+    ));
   }
 
 }
+
+
 
 ?>
