@@ -62,7 +62,8 @@ $log_schema = array(
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
         array('name' => 'format', 'type' => 'text'),
         array('name' => 'arguments', 'type' => 'text'),
-        array('name' => 'elapsed', 'type' => 'double')
+        array('name' => 'prepare_time', 'type' => 'double'),
+        array('name' => 'execute_time', 'type' => 'double'),
       ),
       'primary_key' => 'id'
     ),

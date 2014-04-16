@@ -39,7 +39,7 @@ class LOG
       return;
 
     static $statement = NULL;
-    if ($statement != NULL)
+    if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_events 
             (loglevel, message) 
@@ -72,7 +72,7 @@ class LOG
     ));
   }
 
-  public static function query_profile($format, $arguments, $elapsed)
+  public static function query_profile($format, $arguments, $prepare_time, $execute_time)
   {
     if (LOG_ENABLED !== true)
       return;
@@ -81,14 +81,15 @@ class LOG
     if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_queries_profile
-            (format, arguments, elapsed) 
+            (format, arguments, prepare_time, execute_time) 
           values 
-            (:format, :arguments, :elapsed)");
+            (:format, :arguments, :prepare_time, :execute_time)");
 
     $statement->execute(array(
       ':format' => $format,
       ':arguments' => serialize($arguments),
-      ':elapsed' => $elapsed,
+      ':prepare_time' => $prepare_time,
+      ':execute_time' => $execute_time,
     ));
   }
 

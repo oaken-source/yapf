@@ -26,7 +26,8 @@ class DB
 
   public static function init()
   {
-    self::$handle = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_DBNAME, DB_DBUSER, DB_DBPASS);
+    self::$handle = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_DBNAME, DB_DBUSER, DB_DBPASS,
+      array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
     assert_fatal(self::$handle, "DB: unable to connect to database");
   }
 
@@ -54,7 +55,6 @@ class DB
     if (!$statement)
       {
         $error = self::$handle->errorInfo();
-        print_r($error);
         LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
         return false;
       }
@@ -66,10 +66,7 @@ class DB
     $res = $statement->execute($arguments);
     if (!$res)
       {
-        $error = self::$handle->errorInfo();
-        print_r($error);
         $error = $statement->errorInfo();
-        print_r($error);
         LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
         return false;
       }
@@ -85,6 +82,13 @@ class DB
   {
     if ($statement instanceof PDOStatement)
       return $statement->fetch(PDO::FETCH_ASSOC);
+    return false;
+  }
+
+  public static function fetchAll($statement)
+  {
+    if ($statement instanceof PDOStatement)
+      return $statement->fetchAll(PDO::FETCH_ASSOC);
     return false;
   }
 
