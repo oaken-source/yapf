@@ -22,6 +22,9 @@
 class RENDERER
 {
 
+  private static $base = "templates/base.php";
+  private static $base_args = array();
+
   private static $content = "<h1>This is YAPF</h1>";
   private static $notices = array();
 
@@ -69,18 +72,21 @@ class RENDERER
           }
         else
           {
-            self::$content = "<h1>404 Not Found</h1><p>the page you requested could not be found</p>";
+            self::$content = T::inline("<h1>404 Not Found</h1><p>the page you requested could not be found</p>");
           }
       }
 
-    if (file_exists("templates/base.php"))
+    if (file_exists(self::$base))
       {
-        $template = new T("templates/base.php", array(
+        $args = self::$base_args + array(
           'title' => self::$title,
           'content' => self::$content,
           'extra_js' => self::$extra_js,
           'page' => self::$page,
-        ));
+        );
+    
+        $template = new T(self::$base, $args);
+
         $template->render();
       }
     elseif (self::$content instanceof T)
@@ -97,10 +103,16 @@ class RENDERER
     ANALYTICS::finish($status);
   }
 
+  public static function setBaseTemplate($t, $args = array())
+  {
+    self::$base = "templates/" . $t;
+    self::$base_args = $args;
+  }
+
   public static function setTemplate($t, $args = array())
   {
     self::$content = new T("pages/" . self::$page . "/templates/" . $t, $args);
-  } 
+  }
 
   public static function setError($str)
   {

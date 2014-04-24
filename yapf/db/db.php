@@ -78,6 +78,13 @@ class DB
     return $statement;
   }
 
+  public static function quote($value)
+  {
+    if (is_array($value))
+      return array_map(array(self::$handle, 'quote'), $value);
+    return self::$handle->quote($value);
+  }
+
   public static function fetch($statement)
   {
     if ($statement instanceof PDOStatement)

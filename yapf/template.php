@@ -25,10 +25,30 @@ class T
   private $file;
   private $args;
 
+  private $inline;
+
+  private static function filter(&$val)
+  {    
+    if (is_string($val))
+      $val = htmlspecialchars($val);
+    elseif (!($val instanceof T))
+      LOG::event('TEMPLATE-ERROR', "passed invalid type '" . gettype($val) . "' to template");
+  }
+
+  public static function inline($string)
+  {
+    $t = new self("");
+    $t->inline = $string;
+    return $t;
+  }
+  
   public function __construct($file = "", $args = array())
   {
     $this->file = $file;
     $this->args = $args;
+    $this->inline = "";
+
+    array_walk_recursive($this->args, 'self::filter');
   }
 
   public function __get($key)
@@ -41,15 +61,17 @@ class T
     $this->args[$key] = $value;
   }
 
-  public function filter($str)
-  {
-    return htmlspecialchars($str);
-  }
-
   public function render()
   {
-    check_file_integrity($this->file);
-    require($this->file);
+    if (!$this->file)
+      {
+        echo $this->inline;
+      }
+    else
+      {
+        check_file_integrity($this->file);
+        require($this->file);
+      }
   }
 
 }
