@@ -38,10 +38,18 @@ class DBADMIN
   public static function query($format, $arguments = array())
   {
     $statement = self::$handle->prepare($format);
-    assert_fatal($statement, "DBADMIN: [" . self::$handle->errorCode() . "] " . self::$handle->errorInfo());
+    if (!$statement)
+      {
+        $error = self::$handle->errorInfo();
+        assert_fatal(0, "DBADMIN: [" . $error[0] . "] " . $error[2] . ": " . $format);
+      }
 
     $res = $statement->execute($arguments);
-    assert_fatal($res, "DBADMIN: [" . $statement->errorCode() . "] " . $statement->errorInfo());
+    if (!$res)
+      {
+        $error = $statement->errorInfo();
+        assert_fatal(0, "DBADMIN: [". $error[0] . "] " . $error[2] . ": " . $format);
+      }
 
     return $statement;
   }

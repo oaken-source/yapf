@@ -49,7 +49,7 @@ class EVOLVE
     while ($row = DBADMIN::fetch($res))
       self::$evolutions[$row['identifier']] = $row;
 
-    $schema_id = sha512(($schema['id'] ? $schema['id'] : $schema['name']));
+    $schema_id = sha512((isset($schema['id']) ? $schema['id'] : $schema['name']));
     $schema_hash = sha512(serialize($schema));
 
     $evolved = False;
@@ -157,7 +157,9 @@ class EVOLVE
     $previous_column = "first";
     foreach ($table['columns'] as $column)
       {
-        $column['type'] or $column['type'] = "int";
+        if (!isset($column['type']))
+          $column['type'] = "int";
+          
         if (!$db_columns[$column['name']])
           {
             DBADMIN::query("
@@ -165,7 +167,7 @@ class EVOLVE
                 add column `" . $column['name'] . "` 
                   " . $column['type'] . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
-                  " . ($column['default'] ? "default '" . $column['default'] . "'" : '') . "
+                  " . ($column['default'] ? "default " . $column['default'] : '') . "
                   " . $previous_column);
           }
         else

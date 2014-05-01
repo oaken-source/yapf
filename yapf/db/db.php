@@ -24,7 +24,7 @@ class DB
   
   private static $handle;
 
-  public static function init()
+  public static function connect()
   {
     self::$handle = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_DBNAME, DB_DBUSER, DB_DBPASS,
       array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));

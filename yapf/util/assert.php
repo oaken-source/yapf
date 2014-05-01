@@ -19,44 +19,25 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-// setup error logging
-error_reporting(E_ALL | E_STRICT);
+/* check a given condition and die horribly if not met.
+ *
+ * params:
+ *   condition - the condition to test
+ *   message - the message to print
+ */
+function assert_fatal($condition, $message)
+{
+  if (!$condition)
+    {
+      if (class_exists('LOG'))
+        LOG::event("FATAL", $message);
+      if (class_exists('ANALYTICS'))
+        ANALYTICS::finish(500);
+      header("HTTP/1.1 500 Internal Server Error");
+      echo '<h1>500 - Internal Server Error</h1>';
+      echo '<p><b>FATAL:</b> ' . htmlentities($message) . '</p>';
+      exit();
+    }
+}
 
-// load user defined settings
-defined('SETTINGS_FILE') || define('SETTINGS_FILE', 'settings.php');
-if (file_exists(SETTINGS_FILE))
-  yapf_require_once(SETTINGS_FILE);
-
-// timezone
-defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
-date_default_timezone_set(DEFAULT_TIMEZONE);
-
-// capture timestamp for performance analysis
-define('SCRIPT_START', microtime(true));
-
-// root page for redirection
-defined('INDEX_LOCATION') or define('INDEX_LOCATION', '/');
-
-// session stuff
-defined('SESSION_PATH') or define('SESSION_PATH', '/tmp');
-ini_set('session.gc_probability', 0);
-ini_set('session.save_path', SESSION_PATH);
-
-// charset
-ini_set('default_charset', 'utf-8');
-
-// database access controls
-defined('LOG_ENABLED') or define('LOG_ENABLED', false);
-if (LOG_ENABLED === true)
-  {
-    assert_fatal(defined('LOG_SERVER') && defined('LOG_DBUSER') && defined('LOG_DBPASS') && defined('LOG_DBNAME'), 
-      "invalid settings: LOG_ENABLED set, but one of LOG_SERVER, LOG_DBUSER, LOG_DBPASS, LOG_DBNAME unset");
-  }
-defined('DB_ENABLED') or define('DB_ENABLED', false);
-if (DB_ENABLED === true)
-  {
-    assert_fatal(defined('DB_SERVER') && defined('DB_DBUSER') && defined('DB_DBPASS') && defined('DB_DBNAME'), 
-      "invalid settings: DB_ENABLED set, but one of DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME unset");
-  }
- 
 ?>

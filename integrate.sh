@@ -27,10 +27,10 @@ set -u
 
 files="yapf manage.py"
 
-code=/home/andi/code
+code=/home/andi/projects
 
 # kalindor-legacy
-rsync -av --delete --exclude=".*" $files $code/kalindor-legacy/
+rsync -av --delete --exclude=".*" $files $code/kalindor/
 
 # graprof.grapentin.org
 rsync -av --delete --exclude=".*" $files $code/grapentin.org/graprof/

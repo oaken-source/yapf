@@ -28,11 +28,17 @@ class T
   private $inline;
 
   private static function filter(&$val)
-  {    
-    if (is_string($val))
-      $val = htmlspecialchars($val);
-    elseif (!($val instanceof T))
-      LOG::event('TEMPLATE-ERROR', "passed invalid type '" . gettype($val) . "' to template");
+  {
+    if ($val instanceof T)
+      return $val;
+
+    if (is_object($val))
+      {
+        LOG::event('TEMPLATE-ERROR', "passed invalid type '" . gettype($val) . "' to template");
+        return NULL;
+      }
+
+    return htmlspecialchars($val);
   }
 
   public static function inline($string)

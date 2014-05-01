@@ -24,7 +24,7 @@ class LOG
 
   private static $handle;
 
-  public static function init()
+  public static function connect()
   {
     self::$handle = new PDO("mysql:host=" . LOG_SERVER . ";dbname=" . LOG_DBNAME, LOG_DBUSER, LOG_DBPASS);
     assert_fatal(self::$handle, "LOGDB: unable to connect to database");
@@ -108,7 +108,7 @@ class LOG
 
     $statement->execute(array(
       ':request' => $_SERVER['REQUEST_URI'],
-      ':referer' => $_SERVER['HTTP_REFERER'],
+      ':referer' => (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ""),
       ':remote' => $_SERVER['REMOTE_ADDR'],
       ':totaltime' => $totaltime,
       ':http_status' => $http_status,

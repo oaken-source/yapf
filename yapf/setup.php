@@ -20,7 +20,10 @@
  ******************************************************************************/
 
 // get some basic utility methods
-require_once("yapf/util.php");
+require_once("yapf/util/redirect.php");
+require_once("yapf/util/assert.php");
+require_once("yapf/util/require.php");
+require_once("yapf/util/crypto.php");
 
 // load settings
 require_once("yapf/settings_default.php");
@@ -33,12 +36,13 @@ require_once("yapf/renderer.php");
 require_once("yapf/analytics.php");
 require_once("yapf/db/log.php");
 require_once("yapf/db/db.php");
+require_once("yapf/dpc.php");
 
 // initialize
 if (LOG_ENABLED === true)
-  LOG::init();
+  LOG::connect();
 if (DB_ENABLED === true)
-  DB::init();
+  DB::connect();
 
 SESSION::init();
 

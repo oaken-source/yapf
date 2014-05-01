@@ -103,6 +103,14 @@ class RENDERER
     ANALYTICS::finish($status);
   }
 
+  public static function getLastRenderedPage()
+  {
+    if (isset($_SESSION['yapf']['last_rendered_request_url']))
+      return $_SESSION['yapf']['last_rendered_request_url'];
+
+    return "";
+  }
+
   public static function setBaseTemplate($t, $args = array())
   {
     self::$base = "templates/" . $t;

@@ -19,7 +19,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-
 /* redirect to a given location and exit the script
  *
  * params:
@@ -33,61 +32,11 @@ function redirect_and_exit($location = INDEX_LOCATION)
   exit();
 }
 
-/* check a given condition and die horribly if not met.
- *
- * params:
- *   condition - the condition to test
- *   message - the message to print
+/* redirect to the last successfully rendered page and exit the script
  */
-function assert_fatal($condition, $message)
-{
-  if (!$condition)
-    {
-      if (class_exists('LOG'))
-        LOG::event("FATAL", $message);
-      if (class_exists('ANALYTICS'))
-        ANALYTICS::finish(500);
-      header("HTTP/1.1 500 Internal Server Error");
-      echo '<h1>500 - Internal Server Error</h1>';
-      echo '<p><b>FATAL:</b> ' . htmlentities($message) . '</p>';
-      exit();
-    }
-}
-
-/* set a timed redirect to a given location
- * 
- * params:
- *   delay - the time to wait before redirecting in seconds
- *   location - the location to redirect to
- */
-function redirect_delayed($delay, $location = INDEX_LOCATION)
-{
-  header("Refresh: " . $delay . "; URL=" . $location);
-}
-
-/* simplified interface to the sha512 method
- * 
- * params:
- *   str - th str to hash, if NULL, a random string is used
- */
-function sha512($str = NULL)
-{
-  if ($str === NULL)
-    $str = bin2hex(openssl_random_pseudo_bytes(64));
-  return hash("sha512", $str);
-}
-
-/* check a given file for a set of features required for yapf interoperability
- */
-function check_file_integrity($filename)
-{
-  $file = fopen($filename, 'r');
-  $line = fgets($file);
-  fclose($file);
-
-  assert_fatal(
-    strpos($line, '<?php require_once($_SERVER[\'DOCUMENT_ROOT\']."/yapf/valid_request.php");') === 0,
-    'included file `' . $filename . '` not under request control. (add `<?php yapf_require_once($_SERVER[\'DOCUMENT_ROOT\']."/yapf/valid_request.php");`)');
+function redirect_back_and_exit()
+{  
+  redirect_and_exit(RENDERER::getLastRenderedUrl());
 }
 
 ?>
