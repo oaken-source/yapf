@@ -19,7 +19,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-require_once("yapf/db/dbadmin.php");
+yapf_require_once("yapf/db/dbadmin.php");
 
 class EVOLVE
 {

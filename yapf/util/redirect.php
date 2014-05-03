@@ -19,17 +19,25 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+/* exit the script, and do some cleanup beforehand
+ */
+function yapf_exit()
+{
+  if (class_exists('ANALYTICS'))
+    ANALYTICS::finish();
+  exit();
+}
+
 /* redirect to a given location and exit the script
  *
  * params:
  *   location - the location to redirect to
  */
-function redirect_and_exit($location = INDEX_LOCATION)
+function redirect_and_exit($location = "/")
 {
-  if (class_exists('ANALYTICS'))
-    ANALYTICS::finish(302);
   header("Location: " . $location);
-  exit();
+  RENDERER::setStatus(302);
+  yapf_exit();
 }
 
 /* redirect to the last successfully rendered page and exit the script

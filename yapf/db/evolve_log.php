@@ -19,8 +19,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-require_once("yapf/db/evolve.php");
-
 // this is the yapf log tables database schema.
 $log_schema = array(
   'name' => '__yapf_log_schema',
@@ -60,6 +58,7 @@ $log_schema = array(
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
+        array('name' => 'request_id'),
         array('name' => 'format', 'type' => 'text'),
         array('name' => 'arguments', 'type' => 'text'),
         array('name' => 'prepare_time', 'type' => 'double'),
@@ -72,17 +71,17 @@ $log_schema = array(
       'columns' => array(
         array('name' => 'id', 'auto_increment' => true),
         array('name' => 'timestamp', 'type' => 'timestamp', 'default' => 'current_timestamp'),
-        array('name' => 'request', 'type' => 'text'),
+        array('name' => 'request_uri', 'type' => 'text'),
+        array('name' => 'request_class', 'type' => 'text'),
         array('name' => 'referer', 'type' => 'text'),
         array('name' => 'remote', 'type' => 'varchar(16)'),
-        array('name' => 'totaltime', 'type' => 'double'),
-        array('name' => 'http_status', 'type' => 'int')
+        array('name' => 'totaltime', 'type' => 'double', 'default' => 0),
+        array('name' => 'http_status', 'type' => 'int', 'default' => 0),
+        array('name' => 'post_array', 'type' => 'text'),
       ),
       'primary_key' => 'id'
     ),
   ),
 );
-
-EVOLVE::start(LOG_SERVER, LOG_DBUSER, LOG_DBPASS, LOG_DBNAME, $log_schema);
 
 ?>

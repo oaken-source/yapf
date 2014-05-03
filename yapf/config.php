@@ -19,44 +19,52 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-// setup error logging
-error_reporting(E_ALL | E_STRICT);
+class CONFIG
+{
 
-// load user defined settings
-defined('SETTINGS_FILE') || define('SETTINGS_FILE', 'settings.php');
-if (file_exists(SETTINGS_FILE))
-  yapf_require_once(SETTINGS_FILE);
+  private static $config = array();
 
-// timezone
-defined('DEFAULT_TIMEZONE') or define('DEFAULT_TIMEZONE', 'UTC');
-date_default_timezone_set(DEFAULT_TIMEZONE);
-
-// capture timestamp for performance analysis
-define('SCRIPT_START', microtime(true));
-
-// root page for redirection
-defined('INDEX_LOCATION') or define('INDEX_LOCATION', '/');
-
-// session stuff
-defined('SESSION_PATH') or define('SESSION_PATH', '/tmp');
-ini_set('session.gc_probability', 0);
-ini_set('session.save_path', SESSION_PATH);
-
-// charset
-ini_set('default_charset', 'utf-8');
-
-// database access controls
-defined('LOG_ENABLED') or define('LOG_ENABLED', false);
-if (LOG_ENABLED === true)
+  public static function init()
   {
-    assert_fatal(defined('LOG_SERVER') && defined('LOG_DBUSER') && defined('LOG_DBPASS') && defined('LOG_DBNAME'), 
-      "invalid settings: LOG_ENABLED set, but one of LOG_SERVER, LOG_DBUSER, LOG_DBPASS, LOG_DBNAME unset");
+    if (file_exists("yapf/config.cnf"))
+      self::$config = unserialize(file_get_contents("yapf/config.cnf"));
   }
-defined('DB_ENABLED') or define('DB_ENABLED', false);
-if (DB_ENABLED === true)
+
+  public static function write()
   {
-    assert_fatal(defined('DB_SERVER') && defined('DB_DBUSER') && defined('DB_DBPASS') && defined('DB_DBNAME'), 
-      "invalid settings: DB_ENABLED set, but one of DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME unset");
+    file_put_contents("yapf/config.cnf", serialize(self::$config));
   }
- 
+
+  public static function get($key, $default = NULL)
+  {
+    if (!isset(self::$config[$key]))
+      {
+        self::$config[$key] = $default;
+        self::write();
+      }
+
+    return self::$config[$key];
+  }
+
+  public static function getAll()
+  {
+    return self::$config;
+  }
+
+  public static function set($key, $value)
+  {
+    self::$config[$key] = $value;
+    self::write();
+  }
+
+  public static function delete($key)
+  {
+    unset(self::$config[$key]);
+    self::write();
+  }
+
+}
+
+CONFIG::init();
+
 ?>

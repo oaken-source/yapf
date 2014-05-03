@@ -19,49 +19,10 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-class T
+class APC
 {
-
-  private $file;
-  private $args;
-
-  private static function filter(&$val)
-  {
-    if ($val instanceof T)
-      return $val;
-
-    if (is_object($val))
-      {
-        LOG::event('TEMPLATE-ERROR', "passed invalid type '" . gettype($val) . "' to template");
-        return NULL;
-      }
-
-    return htmlspecialchars($val);
-  }
-
-  public function __construct($file = "", $args = array())
-  {
-    $this->file = $file;
-    $this->args = $args;
-
-    array_walk_recursive($this->args, 'self::filter');
-  }
-
-  public function __get($key)
-  {
-    return $this->args[$key];
-  }
-
-  public function __set($key, $value)
-  {
-    $this->args[$key] = $value;
-  }
-
-  public function render()
-  {
-    check_file_integrity($this->file);
-    require($this->file);
-  }
+  
+  
 
 }
 

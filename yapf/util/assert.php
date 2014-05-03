@@ -29,14 +29,12 @@ function assert_fatal($condition, $message)
 {
   if (!$condition)
     {
-      if (class_exists('LOG'))
-        LOG::event("FATAL", $message);
-      if (class_exists('ANALYTICS'))
-        ANALYTICS::finish(500);
+      RENDERER::setStatus(500);
+      LOG::event("FATAL", $message);
       header("HTTP/1.1 500 Internal Server Error");
       echo '<h1>500 - Internal Server Error</h1>';
       echo '<p><b>FATAL:</b> ' . htmlentities($message) . '</p>';
-      exit();
+      yapf_exit();
     }
 }
 

@@ -25,8 +25,7 @@ class RENDERER
   private static $base = "templates/base.php";
   private static $base_args = array();
 
-  private static $content = "<h1>This is YAPF</h1>";
-  private static $notices = array();
+  private static $content = "";
 
   private static $title = "";
 
@@ -34,6 +33,8 @@ class RENDERER
   private static $extra_css = array();
 
   private static $page = "";
+
+  private static $http_status = 500;
 
   public static function addJS($file)
   {
@@ -52,27 +53,26 @@ class RENDERER
 
   public static function renderPage($page)
   {
-    $status = 200;
+    self::$http_status = 200;
     if (file_exists("pages/" . $page . "/index.php"))
       {
         self::$page = $page;
-        check_file_integrity("pages/" . $page . "/index.php");
-        require("pages/" . $page . "/index.php");
+        yapf_require("pages/" . $page . "/index.php");
       }
     else
       {
-        $status = 404;
+        self::$http_status = 404;
         header("HTTP/1.1 404 Not Found");
-        
+
         if (file_exists("pages/404/index.php"))
           {
             self::$page = "404";
-            check_file_integrity("pages/404/index.php");
-            require("pages/404/index.php");
+            yapf_require("pages/404/index.php");
           }
         else
           {
-            self::$content = T::inline("<h1>404 Not Found</h1><p>the page you requested could not be found</p>");
+            echo "<h1>404 Not Found</h1><p>the page you requested could not be found</p>";
+            yapf_exit();
           }
       }
 
@@ -99,11 +99,10 @@ class RENDERER
       }
   
     $_SESSION['yapf']['last_rendered_request_url'] = $_SERVER['REQUEST_URI'];
-
-    ANALYTICS::finish($status);
+    yapf_exit();
   }
 
-  public static function getLastRenderedPage()
+  public static function getLastRenderedUrl()
   {
     if (isset($_SESSION['yapf']['last_rendered_request_url']))
       return $_SESSION['yapf']['last_rendered_request_url'];
@@ -122,9 +121,14 @@ class RENDERER
     self::$content = new T("pages/" . self::$page . "/templates/" . $t, $args);
   }
 
-  public static function setError($str)
+  public static function getStatus()
   {
-    self::$notices[] = $str;
+    return self::$http_status;
+  }
+
+  public static function setStatus($http_status)
+  {
+    self::$http_status = $http_status;
   }
 
 }

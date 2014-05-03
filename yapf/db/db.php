@@ -22,13 +22,27 @@
 class DB
 {
   
-  private static $handle;
+  private static $handle = NULL;
 
   public static function connect()
   {
-    self::$handle = new PDO("mysql:host=" . DB_SERVER . ";dbname=" . DB_DBNAME, DB_DBUSER, DB_DBPASS,
+    $server = INI::get('yapf', 'general_database_server', '', 'the server of the general database'); 
+    $dbname = INI::get('yapf', 'general_database_name', '', 'the name of the general database'); 
+    $dbuser = INI::get('yapf', 'general_database_username', '', 'the username of the general database'); 
+    $dbpass = INI::get('yapf', 'general_database_password', '', 'the password of the general database'); 
+
+    if (!$server || !$dbname || !$dbuser || !$dbpass)
+      return;
+
+    self::$handle = new PDO("mysql:host=" . $server . ";dbname=" . $dbname, $dbuser, $dbpass,
       array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+
     assert_fatal(self::$handle, "DB: unable to connect to database");
+  }
+
+  public static function isConnected()
+  {
+    return self::$handle !== NULL;
   }
 
   public static function setSchema($schema)
@@ -36,12 +50,20 @@ class DB
     // evolve db, if necessary
     require_once("yapf/db/evolve.php");
 
-    return EVOLVE::start(DB_SERVER, DB_DBUSER, DB_DBPASS, DB_DBNAME, $schema);
+    $server = INI::get('yapf', 'general_database_server', '', 'the server of the general database'); 
+    $dbname = INI::get('yapf', 'general_database_name', '', 'the name of the general database'); 
+    $dbuser = INI::get('yapf', 'general_database_username', '', 'the username of the general database'); 
+    $dbpass = INI::get('yapf', 'general_database_password', '', 'the password of the general database'); 
+
+    if (!$server || !$dbname || !$dbuser || !$dbpass)
+      return;
+
+    return EVOLVE::start($server, $dbuser, $dbpass, $dbname, $schema);
   }
 
   public static function query($format, $arguments = array())
   {
-    assert_fatal(DB_ENABLED === true, "DB_ENABLED not set, but DB::query(...) used. fix your settings");
+    assert_fatal(self::isConnected(), "Database currently disabled - invalid or missing configuration?");
 
     if (!is_array($arguments))
       {
@@ -105,5 +127,7 @@ class DB
   }
 
 }
+
+DB::connect();
 
 ?>

@@ -22,23 +22,38 @@
 class ANALYTICS
 {
 
-  private static $enabled = true;
+  private static $request_id = 0;
 
-  public static function disable()
+  public static function start()
   {
-    self::$enabled = false;
+    $request_uri = $_SERVER['REQUEST_URI'];
+    $request_class = self::strip($_SERVER['REQUEST_URI']);
+    $referer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "");
+    $remote = $_SERVER['REMOTE_ADDR'];
+    $post_array = serialize(isset($_POST) ? $_POST : array());
+    
+    self::$request_id = LOG::analytics_start($request_uri, $request_class, $referer, $remote, $post_array);
   }
-
-  public static function finish($http_status = 200)
+  
+  public static function finish()
   {
-    if (LOG_ENABLED !== true || self::$enabled !== true)
-      return;
-
     $totaltime = microtime(true) - SCRIPT_START;
 
-    LOG::analytics($totaltime, $http_status);
+    LOG::analytics_finish(self::$request_id, $totaltime, RENDERER::getStatus());
+  }
+
+  private static function strip($uri)
+  {
+    return preg_replace('/([^e]|[^g]e|[^a]ge|[^p]age|[^?&]page)=[^&]*/', '$1', $uri);
+  }
+
+  public static function getRequestId()
+  {
+    return self::$request_id;
   }
 
 }
+
+ANALYTICS::start();
 
 ?>

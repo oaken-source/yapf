@@ -22,20 +22,35 @@
 class LOG
 {
 
-  private static $handle;
+  private static $handle = NULL;
 
   public static function connect()
   {
-    self::$handle = new PDO("mysql:host=" . LOG_SERVER . ";dbname=" . LOG_DBNAME, LOG_DBUSER, LOG_DBPASS);
+    $server = INI::get('yapf', 'logging_database_server', '', 'the server of the logging database'); 
+    $dbname = INI::get('yapf', 'logging_database_name', '', 'the name of the logging database'); 
+    $dbuser = INI::get('yapf', 'logging_database_username', '', 'the username of the logging database'); 
+    $dbpass = INI::get('yapf', 'logging_database_password', '', 'the password of the logging database'); 
+
+    if (!$server || !$dbname || !$dbuser || !$dbpass)
+      return;
+
+    self::$handle = new PDO("mysql:host=" . $server . ";dbname=" . $dbname, $dbuser, $dbpass);
     assert_fatal(self::$handle, "LOGDB: unable to connect to database");
 
-    // evolve logdb, if necessary
+    // always evolve logdb, if necessary
     require_once("yapf/db/evolve_log.php");
+    require_once("yapf/db/evolve.php");
+    EVOLVE::start($server, $dbuser, $dbpass, $dbname, $log_schema);
+  }
+
+  public static function isConnected()
+  {
+    return self::$handle !== NULL;
   }
 
   public static function event($loglevel, $message)
   {
-    if (LOG_ENABLED !== true)
+    if (!self::isConnected())
       return;
 
     static $statement = NULL;
@@ -54,7 +69,7 @@ class LOG
 
   public static function query_failed($format, $arguments, $message)
   {
-    if (LOG_ENABLED !== true)
+    if (!self::isConnected())
       return;
 
     static $statement = NULL;
@@ -74,18 +89,19 @@ class LOG
 
   public static function query_profile($format, $arguments, $prepare_time, $execute_time)
   {
-    if (LOG_ENABLED !== true)
+    if (!self::isConnected())
       return;
 
     static $statement = NULL;
     if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_queries_profile
-            (format, arguments, prepare_time, execute_time) 
+            (request_id, format, arguments, prepare_time, execute_time) 
           values 
-            (:format, :arguments, :prepare_time, :execute_time)");
+            (:request_id, :format, :arguments, :prepare_time, :execute_time)");
 
     $statement->execute(array(
+      ':request_id' => ANALYTICS::getRequestId(),
       ':format' => $format,
       ':arguments' => serialize($arguments),
       ':prepare_time' => $prepare_time,
@@ -93,30 +109,54 @@ class LOG
     ));
   }
 
-  public static function analytics($totaltime, $http_status)
+  public static function analytics_start($request_uri, $request_class, $referer, $remote, $post_array)
   {
-    if (LOG_ENABLED !== true)
+    if (!self::isConnected())
       return;
-    
+
     static $statement = NULL;
     if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_analytics 
-            (request, referer, remote, totaltime, http_status) 
+            (request_uri, request_class, referer, remote, post_array) 
           values
-            (:request, :referer, :remote, :totaltime, :http_status)");
+            (:request_uri, :request_class, :referer, :remote, :post_array)");
 
     $statement->execute(array(
-      ':request' => $_SERVER['REQUEST_URI'],
-      ':referer' => (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ""),
-      ':remote' => $_SERVER['REMOTE_ADDR'],
+      ':request_uri' => $request_uri,
+      ':request_class' => $request_class,
+      ':referer' => $referer,
+      ':remote' => $remote,
+      ':post_array' => $post_array,
+    ));
+
+    return self::$handle->lastInsertId();
+  }
+
+  public static function analytics_finish($request_id, $totaltime, $http_status)
+  {
+    if (!self::isConnected())
+      return;
+
+    static $statement = NULL;
+    if ($statement == NULL)
+      $statement = self::$handle->prepare("
+        update __yapf_log_analytics
+          set totaltime = :totaltime,
+            http_status = :http_status
+          where id = :request_id");
+
+    $statement->execute(array(
       ':totaltime' => $totaltime,
       ':http_status' => $http_status,
+      ':request_id' => $request_id,
     ));
+
+    return self::$handle->lastInsertId();
   }
 
 }
 
-
+LOG::connect();
 
 ?>
