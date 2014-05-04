@@ -22,8 +22,60 @@
 class APC
 {
   
-  
+  private static $dir = NULL;
+
+  public static function init()
+  {
+    self::$dir = dirname(__FILE__) . "/apc/";
+    if (!is_dir(self::$dir))
+      mkdir(self::$dir, 0777, true);
+  }
+
+  public static function schedule($function, $delay, $arguments = array())
+  {
+    $identifier = sha512();
+
+    $start_time = SCRIPT_START;
+    $scheduled_end_time = $start_time + $delay;
+
+    $apc = array(
+      'function' => $function,
+      'start_time' => $start_time,
+      'scheduled_end_time' => $scheduled_end_time,
+      'arguments' => $arguments
+    );
+
+    $apc_filename = self::$dir . "/" . $identifier . ".apc";
+    file_put_contents($apc_filename, serialize($apc));
+
+    $min = floor($scheduled_end_time / 60) - floor($start_time / 60);
+    $sec = ($min ? floor($scheduled_end_time % 60) : $delay);
+
+    $command = 'echo "sleep ' . $sec . '; curl http://' . $_SERVER['SERVER_NAME'] . '/?apc=' . $identifier . '" | at now+' . $min . 'minutes &>/dev/null; echo $?';
+    $res = shell_exec($command);
+    if ($res != 0)
+      {
+        LOG::event('APC-FAILURE', "unable to spawn APC (returned `" . $res . "'): " . $command);
+        return;
+      }
+
+    return $identifier;
+  }
+
+  public static function callback_and_exit($identifier)
+  {
+    $apc_filename = self::$dir . "/" . $identifier . ".apc";
+    if (!file_exists($apc_filename))
+      LOG::event('APC_FAILURE', 'apc-file of invalid id requested');
+
+    $apc = unserialize(file_get_contents($apc_filename));
+    print_r($apc);
+
+    yapf_exit();
+  }
 
 }
+
+APC::init();
 
 ?>

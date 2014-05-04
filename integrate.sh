@@ -21,21 +21,23 @@
 
 set -e
 set -u
+set +x
 
 ## this file is intended to push latest versions of yapf into the projects it has been integrated in.
 ## subject to change and probably only really useful on my own machine.
 
 files="yapf manage.py"
+exclude="--exclude '.*' --exclude 'yapf/acp' --exclude 'yapf/sessions'"
 
 code=/home/andi/projects
 
 # kalindor-legacy
-rsync -av --delete --exclude=".*" $files $code/kalindor/
+rsync -av --delete $exclude $files $code/kalindor/
 
 # graprof.grapentin.org
-rsync -av --delete --exclude=".*" $files $code/grapentin.org/graprof/
+rsync -av --delete $exclude $files $code/grapentin.org/graprof/
 
 # gallery.grapentin.org
-rsync -av --delete --exclude=".*" $files $code/grapentin.org/gallery/
+rsync -av --delete $exclude $files $code/grapentin.org/gallery/
 
 echo "all up to date"

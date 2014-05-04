@@ -23,24 +23,26 @@
 define('SCRIPT_START', microtime(true));
 error_reporting(E_ALL | E_STRICT);
 
+$yapf = dirname(__FILE__);
+
 // get some basic utility methods
-require_once("yapf/util/redirect.php");
-require_once("yapf/util/assert.php");
-require_once("yapf/util/require.php");
-require_once("yapf/util/crypto.php");
+require_once($yapf . "/util/redirect.php");
+require_once($yapf . "/util/assert.php");
+require_once($yapf . "/util/require.php");
+require_once($yapf . "/util/crypto.php");
 
 // load settings
-require_once("yapf/ini.php");
-require_once("yapf/config.php");
+require_once($yapf . "/ini.php");
+require_once($yapf . "/config.php");
 
 // get special modules
-require_once("yapf/mail.php");
-require_once("yapf/template.php");
-require_once("yapf/renderer.php");
-require_once("yapf/db/log.php");
-require_once("yapf/db/db.php");
-require_once("yapf/analytics.php");
-require_once("yapf/session.php");
-require_once("yapf/acp.php");
+require_once($yapf . "/mail.php");
+require_once($yapf . "/template.php");
+require_once($yapf . "/renderer.php");
+require_once($yapf . "/db/log.php");
+require_once($yapf . "/db/db.php");
+require_once($yapf . "/analytics.php");
+require_once($yapf . "/session.php");
+require_once($yapf . "/apc.php");
 
 ?>

@@ -19,11 +19,6 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-// necessary session configuration to avoid greedy gc
-ini_set('session.gc_probability', 1);
-ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 7);
-ini_set('session.save_path', INI::get('yapf', 'session_save_path', '/tmp', 'the path to save session files'));
-
 class SESSION
 {
   
@@ -31,6 +26,15 @@ class SESSION
 
   public static function init()
   {
+    $session_save_path = INI::get('yapf', 'session_save_path', dirname(__FILE__) . '/sessions/', 'the path to save session files');
+    if (!is_dir($session_save_path))
+      mkdir($session_save_path, 0777, true);
+
+    // necessary session configuration to avoid greedy gc
+    ini_set('session.gc_probability', 1);
+    ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 7);
+    ini_set('session.save_path', $session_save_path);
+
     session_start();
     if (isset($_SESSION['messages']))
       self::$messages = unserialize($_SESSION['messages']);
