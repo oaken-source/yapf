@@ -27,17 +27,15 @@ set +x
 ## subject to change and probably only really useful on my own machine.
 
 files="yapf manage.py"
-exclude="--exclude '.*' --exclude 'yapf/acp' --exclude 'yapf/sessions'"
-
 code=/home/andi/projects
 
 # kalindor-legacy
-rsync -av --delete $exclude $files $code/kalindor/
+rsync -av --exclude '.*' $files $code/kalindor/
 
 # graprof.grapentin.org
-rsync -av --delete $exclude $files $code/grapentin.org/graprof/
+rsync -av --exclude '.*' $files $code/grapentin.org/graprof/
 
 # gallery.grapentin.org
-rsync -av --delete $exclude $files $code/grapentin.org/gallery/
+rsync -av --exclude '.*' $files $code/grapentin.org/gallery/
 
 echo "all up to date"

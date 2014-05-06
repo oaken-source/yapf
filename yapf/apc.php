@@ -42,7 +42,7 @@ class APC
       'function' => $function,
       'start_time' => $start_time,
       'scheduled_end_time' => $scheduled_end_time,
-      'arguments' => $arguments
+      'arguments' => $arguments,
     );
 
     $apc_filename = self::$dir . "/" . $identifier . ".apc";
@@ -51,25 +51,35 @@ class APC
     $min = floor($scheduled_end_time / 60) - floor($start_time / 60);
     $sec = ($min ? floor($scheduled_end_time % 60) : $delay);
 
-    $command = 'echo "sleep ' . $sec . '; curl http://' . $_SERVER['SERVER_NAME'] . '/?apc=' . $identifier . '" | at now+' . $min . 'minutes &>/dev/null; echo $?';
+    $command = 'echo "sleep ' . $sec . '; curl http://' . $_SERVER['SERVER_NAME'] . '/?apc=' . $identifier . '" | at now+' . $min . 'minutes 2>&1';
     $res = shell_exec($command);
-    if ($res != 0)
+
+    $matches;
+    if (!preg_match('/job ([0-9]*) at/', $res, $matches))
       {
-        LOG::event('APC-FAILURE', "unable to spawn APC (returned `" . $res . "'): " . $command);
-        return;
+        LOG::event('APC_FAILURE', 'failed to spawn APC: ' . $res);
+        return NULL;
       }
+
+    // unused:
+    $job_id = $matches[1];
 
     return $identifier;
   }
 
-  public static function callback_and_exit($identifier)
+  public static function cancel($identifier)
+  {
+    return unlink(self::$dir . "/" . $identifier . ".apc");
+  }
+
+  public static function process_callback_and_exit($identifier)
   {
     $apc_filename = self::$dir . "/" . $identifier . ".apc";
     if (!file_exists($apc_filename))
       LOG::event('APC_FAILURE', 'apc-file of invalid id requested');
 
-    $apc = unserialize(file_get_contents($apc_filename));
-    print_r($apc);
+    $_APC = unserialize(file_get_contents($apc_filename));
+    yapf_require_once("callback/" . $function . "/index.php");
 
     yapf_exit();
   }

@@ -28,15 +28,15 @@ class T
   private static function filter(&$val)
   {
     if ($val instanceof T)
-      return $val;
+      return;
 
     if (is_object($val))
       {
         LOG::event('TEMPLATE-ERROR', "passed invalid type '" . gettype($val) . "' to template");
-        return NULL;
+        $val = NULL;
       }
 
-    return htmlspecialchars($val);
+    $val = htmlspecialchars($val);
   }
 
   public function __construct($file = "", $args = array())
