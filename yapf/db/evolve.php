@@ -91,7 +91,7 @@ class EVOLVE
 
   private static function evolve_table($table, $table_id, $table_hash)
   {
-    $table_current_name = (self::$evolutions[$table_id]['name'] 
+    $table_current_name = (self::$evolutions[$table_id]['name']
       ? self::$evolutions[$table_id]['name']
       : $table['name']);
 
@@ -134,7 +134,7 @@ class EVOLVE
 
     if ($table['primary_key'])
       $query .= "primary key (`" . $table['primary_key'] . "`)";
-    
+
     $query .= ") engine=" . ($table['engine'] ? $table['engine'] : "innodb");
 
     DBADMIN::query($query);
@@ -143,11 +143,11 @@ class EVOLVE
   private static function upgrade_table($table)
   {
     DBADMIN::query("
-      alter table `" . $table['name'] . "` 
+      alter table `" . $table['name'] . "`
         engine = " . ($table['engine'] ? $table['engine'] : "innodb"));
 
     $res = DBADMIN::query("
-      select * from information_schema.columns 
+      select * from information_schema.columns
         where table_schema = '" . self::$database . "'
           and table_name = '" . $table['name'] . "'");
     $db_columns = array();
@@ -159,12 +159,12 @@ class EVOLVE
       {
         if (!isset($column['type']))
           $column['type'] = "int";
-          
+
         if (!$db_columns[$column['name']])
           {
             DBADMIN::query("
-              alter table `" . $table['name'] . "` 
-                add column `" . $column['name'] . "` 
+              alter table `" . $table['name'] . "`
+                add column `" . $column['name'] . "`
                   " . $column['type'] . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
                   " . ($column['default'] ? "default " . $column['default'] : '') . "
@@ -173,8 +173,8 @@ class EVOLVE
         else
           {
             DBADMIN::query("
-              alter table `" . $table['name'] . "` 
-                change column `" . $column['name'] . "` `" . $column['name'] . "` 
+              alter table `" . $table['name'] . "`
+                change column `" . $column['name'] . "` `" . $column['name'] . "`
                   " . $column['type'] . " not null
                   " . ($column['auto_increment'] ? 'auto_increment' : '') . "
                   " . ($column['default'] ? "default " . $column['default'] : '') . "
@@ -182,7 +182,7 @@ class EVOLVE
           }
 
         $previous_column = "after `" . $column['name'] . "`";
-      } 
+      }
   }
 
   private static function insert_defaults($table)

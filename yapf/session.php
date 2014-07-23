@@ -21,7 +21,7 @@
 
 class SESSION
 {
-  
+
   private static $messages = array();
 
   public static function init()

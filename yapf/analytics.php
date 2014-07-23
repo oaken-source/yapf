@@ -31,10 +31,10 @@ class ANALYTICS
     $referer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : "");
     $remote = $_SERVER['REMOTE_ADDR'];
     $post_array = serialize(isset($_POST) ? $_POST : array());
-    
+
     self::$request_id = LOG::analytics_start($request_uri, $request_class, $referer, $remote, $post_array);
   }
-  
+
   public static function finish()
   {
     $totaltime = microtime(true) - SCRIPT_START;

@@ -77,7 +77,7 @@ class INI
 
     if (isset($section[$ekey]))
       return $section[$ekey];
-    
+
     if ($default !== NULL)
       self::write();
 

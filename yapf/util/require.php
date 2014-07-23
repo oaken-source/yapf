@@ -19,9 +19,9 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-/* assert that a file passes the internal yapf security requirements and raise 
+/* assert that a file passes the internal yapf security requirements and raise
  * a fatal error on failure
- * 
+ *
  * params:
  *   filename - the name of the file to check
  */
@@ -36,10 +36,10 @@ function check_file_integrity($filename)
     'included file `' . $filename . '` not under request control. (add `<?php yapf_require_once($_SERVER[\'DOCUMENT_ROOT\']."/yapf/valid_request.php");`)');
 }
 
-/* assert that a file passes the internal yapf security requirements and raise 
+/* assert that a file passes the internal yapf security requirements and raise
  * a fatal error on failure.
  * on success, include the file via require_once
- * 
+ *
  * params:
  *   filename - the name of the file to check and require
  */
@@ -49,10 +49,10 @@ function yapf_require_once($filename)
   require_once($filename);
 }
 
-/* assert that a file passes the internal yapf security requirements and raise 
+/* assert that a file passes the internal yapf security requirements and raise
  * a fatal error on failure.
  * on success, include the file via require
- * 
+ *
  * params:
  *   filename - the name of the file to check and require
  */
@@ -62,10 +62,10 @@ function yapf_require($filename)
   require($filename);
 }
 
-/* assert that a file passes the internal yapf security requirements and raise 
+/* assert that a file passes the internal yapf security requirements and raise
  * a fatal error on failure.
  * on success, include the file via include_once
- * 
+ *
  * params:
  *   filename - the name of the file to check and include
  */
@@ -75,10 +75,10 @@ function yapf_include_once($filename)
   include_once($filename);
 }
 
-/* assert that a file passes the internal yapf security requirements and raise 
+/* assert that a file passes the internal yapf security requirements and raise
  * a fatal error on failure.
  * on success, include the file via include
- * 
+ *
  * params:
  *   filename - the name of the file to check and include
  */

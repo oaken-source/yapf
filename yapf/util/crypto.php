@@ -20,12 +20,12 @@
  ******************************************************************************/
 
 /* a simplified interface to a sha512 hash implementation.
- * 
+ *
  * params:
  *   str - the string to hash
- * 
+ *
  * returns:
- *   a sha512 hash of the given string, or of a random string if the given 
+ *   a sha512 hash of the given string, or of a random string if the given
  *   string was NULL. the random string is generated via a call to
  *     openssl_random_pseudo_bytes(64)
  */

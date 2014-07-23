@@ -43,7 +43,7 @@ function redirect_and_exit($location = "/")
 /* redirect to the last successfully rendered page and exit the script
  */
 function redirect_back_and_exit()
-{  
+{
   redirect_and_exit(RENDERER::getLastRenderedUrl());
 }
 

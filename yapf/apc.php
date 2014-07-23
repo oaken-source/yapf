@@ -21,7 +21,7 @@
 
 class APC
 {
-  
+
   private static $dir = NULL;
 
   public static function init()

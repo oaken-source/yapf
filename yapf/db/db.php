@@ -21,15 +21,15 @@
 
 class DB
 {
-  
+
   private static $handle = NULL;
 
   public static function connect()
   {
-    $server = INI::get('yapf', 'general_database_server', '', 'the server of the general database'); 
-    $dbname = INI::get('yapf', 'general_database_name', '', 'the name of the general database'); 
-    $dbuser = INI::get('yapf', 'general_database_username', '', 'the username of the general database'); 
-    $dbpass = INI::get('yapf', 'general_database_password', '', 'the password of the general database'); 
+    $server = INI::get('yapf', 'general_database_server', '', 'the server of the general database');
+    $dbname = INI::get('yapf', 'general_database_name', '', 'the name of the general database');
+    $dbuser = INI::get('yapf', 'general_database_username', '', 'the username of the general database');
+    $dbpass = INI::get('yapf', 'general_database_password', '', 'the password of the general database');
 
     if (!$server || !$dbname || !$dbuser || !$dbpass)
       return;
@@ -50,10 +50,10 @@ class DB
     // evolve db, if necessary
     require_once("yapf/db/evolve.php");
 
-    $server = INI::get('yapf', 'general_database_server', '', 'the server of the general database'); 
-    $dbname = INI::get('yapf', 'general_database_name', '', 'the name of the general database'); 
-    $dbuser = INI::get('yapf', 'general_database_username', '', 'the username of the general database'); 
-    $dbpass = INI::get('yapf', 'general_database_password', '', 'the password of the general database'); 
+    $server = INI::get('yapf', 'general_database_server', '', 'the server of the general database');
+    $dbname = INI::get('yapf', 'general_database_name', '', 'the name of the general database');
+    $dbuser = INI::get('yapf', 'general_database_username', '', 'the username of the general database');
+    $dbpass = INI::get('yapf', 'general_database_password', '', 'the password of the general database');
 
     if (!$server || !$dbname || !$dbuser || !$dbpass)
       return;
@@ -70,7 +70,7 @@ class DB
         LOG::query_failed($format, $arguments, "[-1] \$arguments is expected to be an array");
         return false;
       }
-  
+
     $prepare_time = microtime(true);
 
     $statement = self::$handle->prepare($format);
@@ -80,7 +80,7 @@ class DB
         LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
         return false;
       }
-      
+
     $prepare_time = microtime(true) - $prepare_time;
 
     $execute_time = microtime(true);

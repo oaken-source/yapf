@@ -26,10 +26,10 @@ class LOG
 
   public static function connect()
   {
-    $server = INI::get('yapf', 'logging_database_server', '', 'the server of the logging database'); 
-    $dbname = INI::get('yapf', 'logging_database_name', '', 'the name of the logging database'); 
-    $dbuser = INI::get('yapf', 'logging_database_username', '', 'the username of the logging database'); 
-    $dbpass = INI::get('yapf', 'logging_database_password', '', 'the password of the logging database'); 
+    $server = INI::get('yapf', 'logging_database_server', '', 'the server of the logging database');
+    $dbname = INI::get('yapf', 'logging_database_name', '', 'the name of the logging database');
+    $dbuser = INI::get('yapf', 'logging_database_username', '', 'the username of the logging database');
+    $dbpass = INI::get('yapf', 'logging_database_password', '', 'the password of the logging database');
 
     if (!$server || !$dbname || !$dbuser || !$dbpass)
       return;
@@ -56,8 +56,8 @@ class LOG
     static $statement = NULL;
     if ($statement == NULL)
       $statement = self::$handle->prepare("
-        insert into __yapf_log_events 
-            (loglevel, message) 
+        insert into __yapf_log_events
+            (loglevel, message)
           values
             (:loglevel, :message)");
 
@@ -75,9 +75,9 @@ class LOG
     static $statement = NULL;
     if ($statement == NULL)
       $statement = self::$handle->prepare("
-        insert into __yapf_log_queries_failed 
-            (format, arguments, message) 
-          values 
+        insert into __yapf_log_queries_failed
+            (format, arguments, message)
+          values
             (:format, :arguments, :message)");
 
     $statement->execute(array(
@@ -96,8 +96,8 @@ class LOG
     if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_queries_profile
-            (request_id, format, arguments, prepare_time, execute_time) 
-          values 
+            (request_id, format, arguments, prepare_time, execute_time)
+          values
             (:request_id, :format, :arguments, :prepare_time, :execute_time)");
 
     $statement->execute(array(
@@ -117,8 +117,8 @@ class LOG
     static $statement = NULL;
     if ($statement == NULL)
       $statement = self::$handle->prepare("
-        insert into __yapf_log_analytics 
-            (request_uri, request_class, referer, remote, post_array) 
+        insert into __yapf_log_analytics
+            (request_uri, request_class, referer, remote, post_array)
           values
             (:request_uri, :request_class, :referer, :remote, :post_array)");
 

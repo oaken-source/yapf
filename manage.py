@@ -22,7 +22,7 @@
 import sys;
 import os;
 
-index_php_template = """<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php"); 
+index_php_template = """<?php require_once($_SERVER['DOCUMENT_ROOT']."/yapf/valid_request.php");
 
 RENDERER::setTitle("%s");
 RENDERER::setTemplate("%s.php");

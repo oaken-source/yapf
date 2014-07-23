@@ -40,7 +40,7 @@ class RENDERER
   {
     self::$extra_js[] = $file;
   }
-  
+
   public static function addCSS($file)
   {
     self::$extra_css[] = $file;
@@ -84,7 +84,7 @@ class RENDERER
           'extra_js' => self::$extra_js,
           'page' => self::$page,
         );
-    
+
         $template = new T(self::$base, $args);
 
         $template->render();
@@ -97,7 +97,7 @@ class RENDERER
       {
         echo self::$content;
       }
-  
+
     $_SESSION['yapf']['last_rendered_request_url'] = $_SERVER['REQUEST_URI'];
     yapf_exit();
   }
