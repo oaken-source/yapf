@@ -39,6 +39,7 @@ class APC
     $scheduled_end_time = $start_time + $delay;
 
     $apc = array(
+      'identifier' => $identifier,
       'function' => $function,
       'start_time' => $start_time,
       'scheduled_end_time' => $scheduled_end_time,
@@ -78,8 +79,10 @@ class APC
     if (!file_exists($apc_filename))
       LOG::event('APC_FAILURE', 'apc-file of invalid id requested');
 
-    $_APC = unserialize(file_get_contents($apc_filename));
-    yapf_require_once("callback/" . $function . "/index.php");
+    $apc = unserialize(file_get_contents($apc_filename));
+    $_SESSION['apc'] = $apc;
+
+    yapf_require_once("callback/" . $apc['function'] . "/index.php");
 
     yapf_exit();
   }
