@@ -77,7 +77,7 @@ class APC
   {
     $apc_filename = self::$dir . "/" . $identifier . ".apc";
     if (!file_exists($apc_filename))
-      LOG::event('APC_FAILURE', 'apc-file of invalid id requested');
+      return;
 
     $apc = unserialize(file_get_contents($apc_filename));
     $_SESSION['apc'] = $apc;
