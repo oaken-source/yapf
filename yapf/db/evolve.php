@@ -136,6 +136,7 @@ class EVOLVE
       $query .= "primary key (`" . $table['primary_key'] . "`)";
 
     $query .= ") engine=" . ($table['engine'] ? $table['engine'] : "innodb");
+    $query .= " character set utf8";
 
     DBADMIN::query($query);
   }
