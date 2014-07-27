@@ -65,9 +65,12 @@ class DB
   {
     assert_fatal(self::isConnected(), "Database currently disabled - invalid or missing configuration?");
 
+    $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+    $source = $backtrace[0]['file'] . ':' . $backtrace[0]['line'];
+
     if (!is_array($arguments))
       {
-        LOG::query_failed($format, $arguments, "[-1] \$arguments is expected to be an array");
+        LOG::query_failed($format, $source, $arguments, "[-1] \$arguments is expected to be an array");
         return false;
       }
 
@@ -77,7 +80,7 @@ class DB
     if (!$statement)
       {
         $error = self::$handle->errorInfo();
-        LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
+        LOG::query_failed($format, $source, $arguments, "[" . $error[0] . "] " . $error[2]);
         return false;
       }
 
@@ -89,13 +92,13 @@ class DB
     if (!$res)
       {
         $error = $statement->errorInfo();
-        LOG::query_failed($format, $arguments, "[" . $error[0] . "] " . $error[2]);
+        LOG::query_failed($format, $source, $arguments, "[" . $error[0] . "] " . $error[2]);
         return false;
       }
 
     $execute_time = microtime(true) - $execute_time;
 
-    LOG::query_profile($format, $arguments, $prepare_time, $execute_time, 1);
+    LOG::query_profile($format, $source, $arguments, $prepare_time, $execute_time, 1);
 
     return $statement;
   }

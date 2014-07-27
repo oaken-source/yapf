@@ -67,7 +67,7 @@ class LOG
     ));
   }
 
-  public static function query_failed($format, $arguments, $message)
+  public static function query_failed($format, $source, $arguments, $message)
   {
     if (!self::isConnected())
       return;
@@ -76,18 +76,19 @@ class LOG
     if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_queries_failed
-            (format, arguments, message)
+            (format, source, arguments, message)
           values
-            (:format, :arguments, :message)");
+            (:format, :source, :arguments, :message)");
 
     $statement->execute(array(
       ':format' => $format,
+      ':source' => $source,
       ':arguments' => serialize($arguments),
       ':message' => $message,
     ));
   }
 
-  public static function query_profile($format, $arguments, $prepare_time, $execute_time)
+  public static function query_profile($format, $source, $arguments, $prepare_time, $execute_time)
   {
     if (!self::isConnected())
       return;
@@ -96,13 +97,14 @@ class LOG
     if ($statement == NULL)
       $statement = self::$handle->prepare("
         insert into __yapf_log_queries_profile
-            (request_id, format, arguments, prepare_time, execute_time)
+            (request_id, format, source, arguments, prepare_time, execute_time)
           values
-            (:request_id, :format, :arguments, :prepare_time, :execute_time)");
+            (:request_id, :format, :source, :arguments, :prepare_time, :execute_time)");
 
     $statement->execute(array(
       ':request_id' => ANALYTICS::getRequestId(),
       ':format' => $format,
+      ':source' => $source,
       ':arguments' => serialize($arguments),
       ':prepare_time' => $prepare_time,
       ':execute_time' => $execute_time,

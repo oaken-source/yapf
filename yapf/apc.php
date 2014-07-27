@@ -26,7 +26,7 @@ class APC
 
   public static function init()
   {
-    self::$dir = dirname(__FILE__) . "/apc/";
+    self::$dir = INI::get('yapf', 'apc_save_path', dirname(__FILE__) . '/apc/', 'the path to save apc files');
     if (!is_dir(self::$dir))
       mkdir(self::$dir, 0777, true);
   }
