@@ -73,13 +73,19 @@ class APC
     return unlink(self::$dir . "/" . $identifier . ".apc");
   }
 
-  public static function process_callback_and_exit($identifier)
+  public static function get($identifier)
   {
     $apc_filename = self::$dir . "/" . $identifier . ".apc";
     if (!file_exists($apc_filename))
-      return;
+      return NULL;
 
     $apc = unserialize(file_get_contents($apc_filename));
+    return $apc;
+  }
+
+  public static function process_callback_and_exit($identifier)
+  {
+    $apc = self::get($identifier);
     $_SESSION['apc'] = $apc;
 
     yapf_require_once("callback/" . $apc['function'] . "/index.php");
