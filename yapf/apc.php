@@ -86,6 +86,9 @@ class APC
   public static function process_callback_and_exit($identifier)
   {
     $apc = self::get($identifier);
+    if (!$apc)
+      return;
+
     $_SESSION['apc'] = $apc;
 
     yapf_require_once("callback/" . $apc['function'] . "/index.php");

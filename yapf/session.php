@@ -59,6 +59,22 @@ class SESSION
     return $result;
   }
 
+  public static function spoof_push()
+  {
+    if (!isset($_SESSION['_yapf_spoof_stack']))
+      $_SESSION['_yapf_spoof_stack'] = array();
+    $spoof = $_SESSION['_yapf_spoof_stack'];
+    $spoof[] = array_diff_key($_SESSION, array('_yapf_spoof_stack' => 0));
+    $_SESSION = array('_yapf_spoof_stack' => $spoof);
+  }
+
+  public static function spoof_pop()
+  {
+    $spoof = $_SESSION['_yapf_spoof_stack'];
+    $_SESSION = array_pop($spoof);
+    $_SESSION['_yapf_spoof_stack'] = $spoof;
+  }
+
 }
 
 SESSION::init();
